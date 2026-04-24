@@ -1,6 +1,8 @@
-description = "Manually trigger a brief. Usage: /brief-run morning | eod | poll. Use 'poll' to immediately process any pending thread approvals instead of waiting for the next cron."
-argument-hint = "morning | eod | poll"
-prompt = """
+---
+description: "Manually trigger a brief. Usage: /brief-run morning | eod | poll. Use 'poll' to immediately process any pending thread approvals instead of waiting for the next cron."
+argument-hint: 'morning | eod | poll'
+---
+
 You are triggering a brief manually. The user's argument is: `$ARGUMENTS`
 
 ## Routing
@@ -36,4 +38,3 @@ Then invoke the skill. Report back the same summary.
 • Approvals processed: <N> (poll only)
 • Errors: <list or none>
 ```
-"""
