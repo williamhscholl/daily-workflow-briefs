@@ -1,0 +1,17 @@
+{
+  "name": "daily-workflow-briefs",
+  "owner": {
+    "name": "Will Scholl",
+    "url": "https://github.com/williamhscholl"
+  },
+  "plugins": [
+    {
+      "name": "daily-workflow-briefs",
+      "source": ".",
+      "description": "Manager's daily Slack briefs — morning, throughout-the-day poll, and EOD. Calendar + Gmail + Zoom required; Jira + HubSpot optional. Offers to do follow-up work for you with explicit approval.",
+      "version": "0.1.0",
+      "category": "productivity",
+      "keywords": ["brief", "slack", "manager", "daily", "zoom"]
+    }
+  ]
+}

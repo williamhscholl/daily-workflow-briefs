@@ -1,0 +1,21 @@
+{
+  "name": "daily-workflow-briefs",
+  "version": "0.1.0",
+  "description": "Manager's daily Slack briefs — morning, throughout-the-day poll, and EOD. Pulls from Calendar, Gmail, Zoom (required), plus Jira and HubSpot (optional). Offers to do follow-up work for you with explicit approval.",
+  "author": {
+    "name": "Will Scholl",
+    "url": "https://github.com/williamhscholl"
+  },
+  "homepage": "https://github.com/williamhscholl/daily-workflow-briefs",
+  "license": "MIT",
+  "keywords": ["brief", "slack", "productivity", "manager", "daily", "zoom", "calendar"],
+  "skills": [
+    "skills/morning-brief",
+    "skills/eod-brief",
+    "skills/brief-poll"
+  ],
+  "commands": [
+    "commands/brief-setup.toml",
+    "commands/brief-run.toml"
+  ]
+}

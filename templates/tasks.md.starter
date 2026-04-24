@@ -1,0 +1,42 @@
+# My Task System
+_Managed by the Daily Workflow Briefs plugin. Update by replying in your brief thread — "mark X done", "add a task to [goal]", "move X to Friday" — or by editing this file directly. The poll syncs this file from your Slack replies on its next run._
+
+---
+
+## Framework
+- **Critical** = Do Now (urgent + important)
+- **High** = Schedule (important, not urgent)
+- **Medium** = Delegate or defer
+- **Low** = Defer
+- **Monitoring** = Watching someone else's work; no direct action
+
+---
+
+## GOAL: (example — delete this and add your own)
+**Owner:** You | **Priority:** High | **Due:** YYYY-MM-DD
+**Context:** One paragraph on why this matters and what "done" looks like.
+
+### Tasks
+- [ ] [HIGH] Example task | Owner: You | Due: YYYY-MM-DD | Note: Optional context
+- [ ] [MEDIUM] Another example | Owner: Teammate
+
+---
+
+## How tasks get added automatically
+
+The morning brief and the throughout-the-day poll watch for:
+- Zoom meeting next-steps where you're the owner (`You: do X by Friday`)
+- Slack messages mentioning you that contain an ask
+- Jira "work due" digest emails
+- Gmail threads where a VIP asks you something
+
+When they find something, they either:
+- Add it directly as a task here (for things you don't need to approve — new monitoring items, overdue reminders)
+- Post it as a numbered offer in your brief thread (for things you need to approve — "want me to draft a reply to this?")
+
+Reply in the thread with `apply 1` / `skip 2` / `edit 1: new text` / natural language like "mark X done" or "add a task to [goal]: ...".
+
+---
+
+# ARCHIVE — Completed goals
+_Goals move here when all their tasks are done._

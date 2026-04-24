@@ -1,0 +1,39 @@
+description = "Manually trigger a brief. Usage: /brief-run morning | eod | poll. Use 'poll' to immediately process any pending thread approvals instead of waiting for the next cron."
+argument-hint = "morning | eod | poll"
+prompt = """
+You are triggering a brief manually. The user's argument is: `$ARGUMENTS`
+
+## Routing
+
+- If argument is `morning` or empty with no context → invoke the `morning-brief` skill.
+- If argument is `eod` → invoke the `eod-brief` skill.
+- If argument is `poll` → invoke the `brief-poll` skill.
+- If argument is anything else (or empty) → ask the user: "Which brief? Options: `morning`, `eod`, `poll`."
+
+## Before invoking
+
+Read `~/.claude/daily-workflow-briefs/config.md`. If it doesn't exist, tell the user to run `/brief-setup` first and stop.
+
+## When invoking `poll` manually (most common use — user just approved offers in Slack and wants them applied now)
+
+Remind the user: "Running the poll now will process any `apply N` / `skip N` replies you've posted in the brief thread — you don't need to wait for the next cron. I'll post a confirmation in-thread when done."
+
+Then invoke the `brief-poll` skill. Report back a short summary (≤150 words) of what was applied, what was skipped, and any errors.
+
+## When invoking `morning` or `eod` manually (e.g. for testing or after a cron miss)
+
+Tell the user: "Running the <type> brief now. It'll post to your self-DM in 60–90 seconds."
+
+Then invoke the skill. Report back the same summary.
+
+## Report format (after any invocation)
+
+```
+✓ <brief type> completed
+• Signals checked: [list]
+• Posted to: <channel ID>
+• Offers emitted: <N>
+• Approvals processed: <N> (poll only)
+• Errors: <list or none>
+```
+"""
