@@ -12,20 +12,22 @@ Plus a `🤝 Work I can do for you` section that shows up as the first reply to 
 
 ## Install
 
-One-time, in Claude Code:
+> **⚠ Desktop-app users: `/plugin` commands are CLI-only right now.** The Claude Code desktop app doesn't support plugin management yet. Open a terminal, run `claude` to enter a CLI session, run the two `/plugin` commands below there, then reopen the desktop app — the plugin will be available everywhere. After install, everything (including `/brief-setup`) works in both the desktop app and the CLI.
+
+One-time, in a Claude Code **CLI** session:
 
 ```
 /plugin marketplace add williamhscholl/daily-workflow-briefs
 /plugin install daily-workflow-briefs@daily-workflow-briefs
 ```
 
-Then configure:
+Then configure (CLI or desktop app — both work):
 
 ```
 /brief-setup
 ```
 
-That's it. Claude walks you through the setup in chat — no terminal, no file editing. Pick a role (Sales / CS / Product / Engineering / Custom), paste a few Slack IDs, choose a poll interval. Takes about 5 minutes if your MCPs are already connected.
+That's it. Claude walks you through the setup in chat — no file editing needed. Pick a role (Sales / CS / Product / Engineering / Custom), paste a few Slack IDs, choose a poll interval. Takes about 5 minutes if your MCPs are already connected.
 
 ---
 
