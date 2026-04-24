@@ -10,9 +10,34 @@ Plus a `🤝 Work I can do for you` section that shows up as the first reply to 
 
 ---
 
+## Prerequisites
+
+You need **Claude Code** (the coding agent CLI) installed. This is a different product from the Claude Desktop chat app — if you only have the chat app, you still need to install Claude Code separately.
+
+**Mac / Linux:**
+```bash
+curl -fsSL https://claude.com/install.sh | bash
+```
+
+**Windows:** open **PowerShell** (not Git Bash / MINGW64 — the install script uses PowerShell cmdlets):
+```powershell
+irm https://claude.ai/install.ps1 | iex
+```
+
+Verify the install:
+```bash
+claude --version
+```
+
+If you see a version number, continue. If you see `command not found`, the installer didn't add `claude` to your PATH — reopen your terminal (or restart your shell) and try again.
+
+You'll also need these MCPs connected in Claude Code before briefs will work: **Slack, Google Calendar, Gmail, Zoom** (required); **Atlassian, HubSpot** (optional). See [docs/integrations.md](docs/integrations.md).
+
+---
+
 ## Install
 
-One command from any terminal:
+One command from any terminal (Mac/Linux — use **PowerShell** on Windows and run the two `claude plugin` lines separately since `&&` is PowerShell 7+ only):
 
 ```bash
 claude plugin marketplace add williamhscholl/daily-workflow-briefs && claude plugin install daily-workflow-briefs@daily-workflow-briefs
@@ -38,24 +63,6 @@ If you're already in a Claude Code REPL and prefer slash commands:
 
 Equivalent to the shell command above.
 </details>
-
----
-
-## What you need before running setup
-
-These MCPs must be connected to your Claude Code:
-
-**Required** (briefs won't work without these):
-- Slack
-- Google Calendar
-- Gmail
-- Zoom
-
-**Optional** (enable during setup):
-- Atlassian (Jira / Confluence)
-- HubSpot
-
-See [docs/integrations.md](docs/integrations.md) for MCP setup instructions.
 
 ---
 
