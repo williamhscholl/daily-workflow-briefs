@@ -16,7 +16,7 @@ You need **Claude Code** (the coding agent CLI) installed. This is a different p
 
 **Mac / Linux:**
 ```bash
-curl -fsSL https://claude.com/install.sh | bash
+curl -fsSL https://claude.ai/install.sh | bash
 ```
 
 **Windows:** open **PowerShell** (not Git Bash / MINGW64 — the install script uses PowerShell cmdlets):
