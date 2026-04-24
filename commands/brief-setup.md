@@ -70,7 +70,17 @@ Ask each in order:
 
 **HubSpot**: ask "Do you use HubSpot for deals? (yes / no)". If yes, clarify: "I'll add read-only deal summaries to briefs and offer to add notes to deals — NEVER change deal stage, amount, or owner. OK?"
 
-## Step 8 — Poll interval
+## Step 8 — Brief times
+
+Ask each in order, confirming what you heard back:
+
+1. **Morning brief time**: "What time should your morning brief fire? (default 7:20am your local timezone)." Accept formats like `7:20am`, `07:20`, `8am`. Store as 24-hour internal format.
+
+2. **EOD brief time**: "What time should your EOD brief fire? (default 3:30pm your local timezone)." Same format handling.
+
+3. **Weekend runs**: "Skip weekends? (default yes — most managers don't want weekend briefs.)" Yes → weekdays only. No → include Saturday + Sunday.
+
+## Step 9 — Poll interval
 
 Ask: "How often should the throughout-the-day poll run? It checks thread replies, executes approved offers, and scans new signals. More often = more responsive + more tokens. Options:
 
@@ -131,7 +141,9 @@ zoom: on
 jira: projects:[AI,WAT,"INT",PLA,TEL,PUL]
 hubspot: off
 
-## Poll
+## Schedule
+morning_time: 07:20
+eod_time: 15:30
 poll_interval_minutes: 60
 run_on_weekends: false
 
@@ -144,16 +156,16 @@ eod_lookback_hours: 12
 
 ## Step 12 — Schedule the three briefs
 
-Use `mcp__scheduled-tasks__create_scheduled_task` three times (confirm with the user before firing each):
+Use `mcp__scheduled-tasks__create_scheduled_task` three times (confirm with the user before firing each). Use the user's chosen `morning_time`, `eod_time`, `poll_interval_minutes`, and `timezone` from the config. If `run_on_weekends` is true, use `* * *` day-of-week instead of `1-5`.
 
-1. **morning-brief** — cron `20 7 * * 1-5` in their timezone (7:20am Mon–Fri). Runs the `morning-brief` skill.
+1. **morning-brief** — cron `<morning_min> <morning_hour> * * <dow>` in their timezone (default 7:20am Mon–Fri). Runs the `morning-brief` skill.
 2. **brief-poll** — cron based on their poll interval:
    - 30 min: `*/30 8-15 * * 1-5`
    - 60 min: `0 8-15 * * 1-5`
    - 90 min: `0,30 8-15 * * 1-5` (approximate; 90-min true interval needs custom)
    - 120 min: `0 8,10,12,14 * * 1-5`
    - Custom: ask them for the cron string.
-3. **eod-brief** — cron `30 15 * * 1-5` (3:30pm Mon–Fri).
+3. **eod-brief** — cron `<eod_min> <eod_hour> * * <dow>` (default 3:30pm Mon–Fri).
 
 ## Step 13 — Offer a dry run
 
