@@ -71,20 +71,25 @@ If you have a Claude Code MCP connected for the tool, the plugin calls it direct
 - **Notion** — pages you've recently edited or are mentioned in
 - **Asana** — tasks assigned to you with deadline updates
 
-### Path B — Gmail (when no MCP exists)
-For tools without an MCP but that email you summaries — meeting transcribers, status-update tools, daily-digest products — the plugin can search your Gmail for their emails using the Gmail MCP you already have.
-
-Common email-based tools and their default patterns:
-
-| Tool | Gmail filter |
-|------|--------------|
-| **Granola** (meeting transcriber) | `from:noreply@granola.ai newer_than:1d` |
-| **Otter.ai** | `from:noreply@otter.ai newer_than:1d` |
-| **Fireflies.ai** | `from:noreply@fireflies.ai newer_than:1d` |
-| **Fathom** | `from:no-reply@fathom.video newer_than:1d` |
-| **Loom** | `from:no-reply@loom.com subject:"Recap" newer_than:1d` |
+### Path B — Gmail (fallback when no MCP is connected)
+For tools that email you summaries, the plugin can search your Gmail using the Gmail MCP you already have. This is the fallback path when an MCP isn't available or installed.
 
 For meeting-transcriber emails specifically, the brief skills extract "Quick recap" and "Next steps" sections from the email body — same pattern as the built-in Zoom integration. Next steps get classified by owner (you vs your team) just like Zoom.
+
+### Meeting transcribers
+
+The four major Zoom alternatives all have official MCPs now. **MCP is preferred** (real-time, structured data); Gmail is the fallback when an MCP isn't available.
+
+| Tool | Official MCP | Install link | Gmail fallback |
+|------|------|------|------|
+| **Zoom** | ✓ (built-in) | Claude Code Settings → MCP Servers → Zoom | `from:no-reply@zoom.us subject:"Meeting assets" newer_than:1d` |
+| **Granola** | ✓ | [granola.ai/blog/granola-mcp](https://www.granola.ai/blog/granola-mcp) | `from:noreply@granola.ai newer_than:1d` |
+| **Otter.ai** | ✓ | [help.otter.ai → Otter MCP Server](https://help.otter.ai/hc/en-us/articles/35287607569687-Otter-MCP-Server) | `from:noreply@otter.ai newer_than:1d` |
+| **Fireflies.ai** | ✓ | [docs.fireflies.ai → MCP configuration](https://docs.fireflies.ai/getting-started/mcp-configuration) | `from:noreply@fireflies.ai newer_than:1d` |
+| **Fathom** | ✓ (via Composio) | [composio.dev/toolkits/fathom](https://composio.dev/toolkits/fathom) | `from:no-reply@fathom.video newer_than:1d` |
+| **Loom** | — | (no public MCP) | `from:no-reply@loom.com subject:"Recap" newer_than:1d` |
+
+If you install an MCP later, switch with `/briefs:config switch transcriber source to mcp`. To switch back to Gmail: `/briefs:config switch transcriber source to gmail`.
 
 ### How to add one
 

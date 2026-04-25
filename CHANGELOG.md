@@ -10,6 +10,27 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.5.0] — 2026-04-24
+
+### Added
+- **Official MCPs documented for Granola, Otter, Fireflies, and Fathom.** Setup wizard now defaults each one to MCP source (preferred) and asks whether the user has the MCP installed before falling back to Gmail.
+- MCP install links surface inline during setup:
+  - Granola: https://www.granola.ai/blog/granola-mcp
+  - Otter: https://help.otter.ai/hc/en-us/articles/35287607569687-Otter-MCP-Server
+  - Fireflies: https://docs.fireflies.ai/getting-started/mcp-configuration
+  - Fathom (via Composio): https://composio.dev/toolkits/fathom
+- Loom remains Gmail-only (no public MCP available).
+- Zoom now has a documented Gmail fallback pattern (`from:no-reply@zoom.us subject:"Meeting assets" newer_than:1d`) for users who can't or don't want to connect the Zoom MCP — though Zoom MCP is still strongly recommended for fidelity.
+
+### Changed
+- Setup wizard's transcriber step asks "Do you have the [Tool] MCP installed?" before assuming Gmail. Users who say yes get the MCP path; users who say no get the install link plus an offer to use Gmail fallback in the meantime.
+- `docs/integrations.md` now has a unified table for all transcribers showing MCP availability, install links, and Gmail fallback patterns.
+
+### Migration from v0.4.x
+No action required. Existing configs continue to work exactly as before. To switch a transcriber from Gmail-fallback to MCP after installing the MCP: `/briefs:config switch transcriber source to mcp`.
+
+---
+
 ## [v0.4.0] — 2026-04-24
 
 ### Added

@@ -76,41 +76,51 @@ This is one of the highest-signal sources for daily briefs — meeting recaps te
 
 Ask: "What do you use to transcribe and summarize your meetings?
 
-1. **Zoom** (default — most common) — uses the Zoom MCP for AI summaries
-2. **Granola** — uses the Gmail MCP to read Granola's emailed recaps (no Granola MCP exists yet)
-3. **Otter.ai** — same, via Gmail
-4. **Fireflies.ai** — same, via Gmail
-5. **Fathom** — same, via Gmail
-6. **Loom** — same, via Gmail
+1. **Zoom** (default — most common)
+2. **Granola**
+3. **Otter.ai**
+4. **Fireflies.ai**
+5. **Fathom**
+6. **Loom**
 7. **None** — I don't use a transcriber
 8. **Custom** — different tool; I'll tell you how to reach it
 
 Type a number (default 1)."
 
-Based on choice, set `meeting_transcriber` in config:
+For each tool with an official MCP (Zoom, Granola, Otter, Fireflies, Fathom), prefer the MCP path. Ask:
 
-| Choice | type | source | gmail_query |
-|--------|------|--------|-------------|
-| 1. Zoom | `zoom` | `mcp` | (n/a) |
-| 2. Granola | `granola` | `gmail` | `from:noreply@granola.ai newer_than:1d` |
-| 3. Otter | `otter` | `gmail` | `from:noreply@otter.ai newer_than:1d` |
-| 4. Fireflies | `fireflies` | `gmail` | `from:noreply@fireflies.ai newer_than:1d` |
-| 5. Fathom | `fathom` | `gmail` | `from:no-reply@fathom.video newer_than:1d` |
-| 6. Loom | `loom` | `gmail` | `from:no-reply@loom.com subject:"Recap" newer_than:1d` |
-| 7. None | `none` | (n/a) | (n/a) |
-| 8. Custom | (ask) | (ask) | (ask if gmail) |
+> "Do you have the **<Tool> MCP** installed in Claude Code? (yes / no / not sure)
+>
+> If no or not sure, install link: `<link>` — it's a 5-minute setup. Or I can fall back to reading <Tool>'s recap emails from Gmail (lower fidelity but works without an MCP)."
 
-For Zoom (option 1): tell the user "I'll use the Zoom MCP to pull `summary_plain_text` from each completed meeting. Make sure your Zoom MCP is connected (check in Step 12)."
+If they say **yes** → set `source: mcp`.
+If they say **no** and want Gmail fallback → set `source: gmail` with the default `gmail_query` for that tool.
+If they say **install it**, give them the link, ask them to come back when ready.
 
-For Gmail-based options (2–6): tell the user "I'll search your Gmail for `<from-pattern>` and read the recap + next steps from each email body. Make sure your Gmail MCP is connected (already required for built-in signals)."
+Loom doesn't have a public MCP yet, so Loom is Gmail-only.
 
-For None (option 7): tell the user "Got it — meeting next-steps will be skipped. You can add a transcriber later via `/briefs:config`."
+### Configuration matrix
 
-For Custom (option 8): ask:
-- Tool name
-- Source: MCP or Gmail?
-- If MCP: tool's MCP name + what to check
-- If Gmail: from-pattern + what time window
+| Choice | type | preferred source | MCP install link | Gmail fallback query |
+|--------|------|------|------|------|
+| 1. Zoom | `zoom` | `mcp` | (built-in Zoom MCP — Claude Code Settings → MCP Servers) | `from:no-reply@zoom.us subject:"Meeting assets" newer_than:1d` |
+| 2. Granola | `granola` | `mcp` | https://www.granola.ai/blog/granola-mcp | `from:noreply@granola.ai newer_than:1d` |
+| 3. Otter | `otter` | `mcp` | https://help.otter.ai/hc/en-us/articles/35287607569687-Otter-MCP-Server | `from:noreply@otter.ai newer_than:1d` |
+| 4. Fireflies | `fireflies` | `mcp` | https://docs.fireflies.ai/getting-started/mcp-configuration | `from:noreply@fireflies.ai newer_than:1d` |
+| 5. Fathom | `fathom` | `mcp` | https://composio.dev/toolkits/fathom | `from:no-reply@fathom.video newer_than:1d` |
+| 6. Loom | `loom` | `gmail` (no MCP) | (n/a) | `from:no-reply@loom.com subject:"Recap" newer_than:1d` |
+| 7. None | `none` | (n/a) | (n/a) | (n/a) |
+| 8. Custom | `custom` | (ask) | (ask) | (ask if gmail) |
+
+For Zoom (option 1): tell the user "I'll use the Zoom MCP to pull `summary_plain_text` from each completed meeting. Make sure your Zoom MCP is connected (I'll verify in Step 14). If you don't have it, fallback Gmail pattern is `from:no-reply@zoom.us subject:\"Meeting assets\" newer_than:1d`, but that's lower-fidelity than the MCP — Zoom MCP strongly recommended."
+
+For options 2–5: prefer MCP. Show the install link. Offer Gmail fallback as an explicit second choice.
+
+For option 6 (Loom): only Gmail available. Set `source: gmail` automatically with the Loom pattern.
+
+For option 7 (None): tell the user "Got it — meeting next-steps will be skipped. You can add a transcriber later via `/briefs:config`."
+
+For option 8 (Custom): ask tool name, source (MCP or Gmail), and the corresponding details (MCP name + what-to-check description, or Gmail filter + description).
 
 **Confirm the choice and pattern back to the user before continuing.**
 
