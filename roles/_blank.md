@@ -1,6 +1,6 @@
 # Custom / Blank — Role Preset
 
-No role-specific defaults. `/brief-setup` will ask you for every field from scratch.
+No role-specific defaults. `/briefs:setup` will ask you for every field from scratch.
 
 ## Integration defaults
 - calendar: on (required)

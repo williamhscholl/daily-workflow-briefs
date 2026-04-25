@@ -1,5 +1,5 @@
 ---
-description: "Manually trigger a brief. Usage: /brief-run morning | eod | poll. Use 'poll' to immediately process any pending thread approvals instead of waiting for the next cron."
+description: "Manually trigger a brief. Usage: /briefs:run morning | eod | poll. Use 'poll' to immediately process any pending thread approvals instead of waiting for the next cron."
 argument-hint: 'morning | eod | poll'
 ---
 
@@ -14,7 +14,7 @@ You are triggering a brief manually. The user's argument is: `$ARGUMENTS`
 
 ## Before invoking
 
-Read `~/.claude/daily-workflow-briefs/config.md`. If it doesn't exist, tell the user to run `/brief-setup` first and stop.
+Read `~/.claude/daily-workflow-briefs/config.md`. If it doesn't exist, tell the user to run `/briefs:setup` first and stop.
 
 ## When invoking `poll` manually (most common use — user just approved offers in Slack and wants them applied now)
 

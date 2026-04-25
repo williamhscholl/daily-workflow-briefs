@@ -33,7 +33,7 @@ Daily Workflow Briefs needs Claude Code MCPs connected to pull signals from your
 ## Optional MCPs
 
 ### Atlassian (Jira + Confluence)
-- **Enable during `/brief-setup`** if you use Jira or Confluence.
+- **Enable during `/briefs:setup`** if you use Jira or Confluence.
 - **What the plugin uses**:
   - Jira: searching issues (`searchJiraIssuesUsingJql`), reading ticket details, adding comments (only — never status/assignee/priority changes).
   - Confluence: reading pages (`getConfluencePage`), updating pages (`updateConfluencePage`) for approved offers.
@@ -41,15 +41,40 @@ Daily Workflow Briefs needs Claude Code MCPs connected to pull signals from your
 - **JQL quirks** (the plugin handles these automatically):
   - Reserved words (`INT`, `OR`, `AND`, `NOT`) must be quoted.
   - `maxResults` capped at 15, explicit `fields` list required, or responses blow up to 50k+ chars.
-- **Scoping**: during setup you can limit to specific project keys (e.g. `[AI, WAT, INT]`) if your workspace has dozens of projects.
+- **Scoping**: during setup you can limit to specific project keys (e.g. `[AI, OPS, CLA]`) if your workspace has dozens of projects.
 
 ### HubSpot
-- **Enable during `/brief-setup`** if you track deals in HubSpot.
+- **Enable during `/briefs:setup`** if you track deals in HubSpot.
 - **What the plugin uses**:
   - Read: deals you own, deal-stage changes in last 24h, notes, meetings logged.
   - Write: add read-only notes to deals.
 - **Setup**: Claude Code → Settings → MCP Servers → add the HubSpot MCP. Connect your HubSpot account.
 - **Hard restrictions**: the plugin NEVER changes deal stage, amount, owner, or close date. If you try to approve an offer that implies one of these, the poll aborts it with a warning. These are intentional guardrails to prevent accidental pipeline corruption.
+
+---
+
+---
+
+## Additional integrations (any MCP)
+
+The plugin can pull read-only signals from any other MCP you have connected to Claude Code. Examples your team might want:
+
+- **Salesforce** — opportunities, contacts, account activity
+- **Intercom** — conversations assigned to you, recent customer messages
+- **Zendesk** — tickets you own / are CC'd on / are watching
+- **Linear** — issues assigned to you with status changes
+- **GitHub** — PRs awaiting your review (if your org has a GitHub MCP connected)
+- **Notion** — pages you've recently edited or are mentioned in
+- **Asana** — tasks assigned to you with deadline updates
+
+**How to add one:**
+1. Connect the MCP in Claude Code Settings → MCP Servers (the MCP must exist independently — this plugin doesn't bundle them).
+2. During `/briefs:setup` Step 8 (Additional integrations), or any time via `/briefs:config add Intercom as integration: <description>`, register the integration name + a one-line description of what to check.
+3. The brief skills iterate this list each run, call the MCP, and surface findings as a new section in the brief.
+
+**Hard restrictions (same as built-ins):**
+- Read-only in v1. The plugin won't offer write actions for additional integrations regardless of what the underlying MCP supports.
+- If you want write actions on a specific tool, file an issue requesting first-class support — that requires me to think through the safe-action allowlist for that tool.
 
 ---
 

@@ -1,15 +1,15 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "daily-workflow-briefs",
-  "description": "Manager's daily Slack briefs — morning, throughout-the-day poll, and EOD. Calendar + Gmail + Zoom required; Jira + HubSpot optional. Offers to do follow-up work for you with explicit approval.",
+  "name": "briefs",
+  "description": "Daily Slack briefs — morning, throughout-the-day poll, and EOD. Calendar + Gmail + Zoom required; Jira, HubSpot, and additional tools optional. Offers to do follow-up work for you with explicit approval.",
   "owner": {
     "name": "Will Scholl",
     "url": "https://github.com/williamhscholl"
   },
   "plugins": [
     {
-      "name": "daily-workflow-briefs",
-      "description": "Three automated Slack briefs (morning, poll, EOD) with a work-offer approval loop. Pulls from Calendar, Gmail, Zoom; optional Jira and HubSpot.",
+      "name": "briefs",
+      "description": "Three automated Slack briefs (morning, poll, EOD) with a work-offer approval loop. Pulls from Calendar, Gmail, Zoom; optional Jira, HubSpot, and any other tools you connect.",
       "source": "./",
       "category": "productivity"
     }

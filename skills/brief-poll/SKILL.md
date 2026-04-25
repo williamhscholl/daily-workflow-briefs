@@ -122,6 +122,7 @@ Run in parallel (same techniques as morning brief — see that skill for MCP det
 - **Slack watch channels**: for each in `config.watch_channels`, `slack_read_channel` without `oldest`, filter by ts.
 - **Slack DMs from team**: for each in `config.team`, `slack_read_channel` with user ID as channel_id, filter by ts.
 - **Saved messages**: `slack_search_public_and_private` with `from:<@{user_id}> is:saved after:<yesterday>`.
+- **Additional integrations** (from `config.additional_integrations`): for each entry `<mcp_name>: <description>`, invoke that MCP and apply the description as guidance. Read-only — surface as new monitoring items in the confirmation, never as work offers.
 
 ### 6a. Dedup (apply aggressively)
 
@@ -142,15 +143,31 @@ For signals that produced delegable asks matching the action allowlist (see morn
 
 **Number offers starting at 1 for this poll cycle** (NOT continuing from morning brief's numbering). Scope is the poll's own post — users' replies to this poll message reference these new numbers.
 
-Format (same as morning brief):
+Format honors `config.work_offer_preview` (`summary` or `full`) — same templates as morning-brief Step 8:
+
+If `summary`:
 ```
 🤝 *Work I can do for you* — reply here to approve
 
 1. [Short verb + target] — [one-line context]
 2. ...
 
-Reply with `apply 1` / `skip 2` / `show 3` (to preview) / `edit 1: <new text>`.
-I'll pick up your reply on the next poll. ⚡ Need it sooner? Reply, then run `/brief-run poll` in Claude Code.
+Reply with `apply 1` / `skip 2` / `show 3` (to preview the full text) / `edit 1: <new text>`.
+I'll pick up your reply on the next poll. ⚡ Need it sooner? Reply, then run `/briefs:run poll` in Claude Code.
+```
+
+If `full`:
+```
+🤝 *Work I can do for you* — reply here to approve
+
+*1. [Short verb + target]*
+> [Full preview text / diff]
+
+*2. [Short verb + target]*
+> [Full preview text / diff]
+
+Reply with `apply 1` / `skip 2` / `edit 1: <new text>`.
+I'll pick up your reply on the next poll. ⚡ Need it sooner? Reply, then run `/briefs:run poll` in Claude Code.
 ```
 
 Append corresponding entries to `.offers.jsonl` with this poll's `brief_thread_ts` + new `offer_number` sequence.

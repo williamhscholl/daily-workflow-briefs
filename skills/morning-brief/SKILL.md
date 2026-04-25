@@ -101,7 +101,15 @@ Surface: status changes, new comments tagging the user, blockers escalated from 
 
 If `integrations.hubspot` is `on`: scan last 24h for deals where the user is owner. Surface deal-stage changes, new notes, meetings logged. **Read-only in the morning brief** — any offers to update HubSpot deals require explicit confirmation (handled by brief-poll, not here).
 
-### 3g. Tasks overdue (from `$tasks_file`)
+### 3g. Additional integrations (from `config.additional_integrations`)
+
+For each entry `<mcp_name>: <description>`:
+1. Try to invoke the corresponding MCP. If not connected, log "skipped: <name> (MCP not connected)" and continue.
+2. Use the description as guidance. Default: items where the user is owner/assignee/mentioned, last 24h.
+3. Surface 1–3 items per integration as a section labeled with the integration name (e.g. `📞 Intercom (last 24h)`, `💼 Salesforce (last 24h)`).
+4. **Read-only.** Never offer write actions for these in v1, regardless of what the underlying MCP supports.
+
+### 3h. Tasks overdue (from `$tasks_file`)
 
 Parse tasks.md. List overdue tasks (due < today in `config.timezone`) grouped by goal. Limit to ~10, Critical > High > Medium. Include a one-line total ("X overdue across Y goals"). If `$tasks_file` doesn't exist or is empty, skip this section.
 
@@ -193,8 +201,9 @@ If Step 5 produced any offers, post them as a THREAD REPLY to the brief message 
 
 If Step 5 produced zero offers, skip this step entirely.
 
-**Format:**
+**Format depends on `config.work_offer_preview` (default `summary`):**
 
+If `summary`:
 ```
 🤝 *Work I can do for you* — reply here to approve
 
@@ -202,9 +211,24 @@ If Step 5 produced zero offers, skip this step entirely.
 2. [Short verb + target] — [one-line context]
 3. [Short verb + target] — [one-line context]
 
-Reply with `apply 1` / `skip 2` / `show 3` (to preview) / `edit 1: <new text>`.
+Reply with `apply 1` / `skip 2` / `show 3` (to preview the full text) / `edit 1: <new text>`.
 I'll pick up your reply on the next poll and execute it there.
-⚡ Need it sooner? Reply here, then open Claude Code and run `/brief-run poll` — it'll process your reply within seconds instead of waiting for the cron.
+⚡ Need it sooner? Reply here, then open Claude Code and run `/briefs:run poll` — it'll process your reply within seconds instead of waiting for the cron.
+```
+
+If `full`:
+```
+🤝 *Work I can do for you* — reply here to approve
+
+*1. [Short verb + target]*
+> [Full preview text / diff inline — what Claude will apply if approved]
+
+*2. [Short verb + target]*
+> [Full preview text / diff]
+
+Reply with `apply 1` / `skip 2` / `edit 1: <new text>`.
+I'll pick up your reply on the next poll and execute it there.
+⚡ Need it sooner? Reply here, then open Claude Code and run `/briefs:run poll`.
 ```
 
 **Write each offer to the offers ledger** so the poll can find them by number:
