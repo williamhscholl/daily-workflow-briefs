@@ -173,9 +173,18 @@ Tell the user: "Open Claude Code → Settings → MCP Servers and search for `<t
 
 Ask each in order, confirming what you heard back:
 
-1. **Morning brief time**: "What time should your morning brief fire? (default 7:30am your local timezone)." Accept formats like `7:30am`, `07:30`, `8am`. Store as 24-hour internal format.
+1. **Morning brief time**: ask
+   > "When should your morning brief fire? (Heads up: scheduled tasks only fire while your computer is awake — pick a time you're usually at your laptop.)
+   > 1. **7:30am** — early bird
+   > 2. **9:30am** — morning person
+   > 3. **11:30am** — sleeping in
+   > 4. **Custom** — type a time
+   >
+   > Pick a number (no default — ask the user to choose so they don't end up with someone else's morning routine)."
+   
+   For options 1–3, store the corresponding 24-hour value (`07:30`, `09:30`, `11:30`). For option 4, accept formats like `7:45am`, `08:15`, `10am` and convert to 24-hour.
 
-2. **EOD brief time**: "What time should your EOD brief fire? (default 3:30pm your local timezone)." Same format handling.
+2. **EOD brief time**: "What time should your EOD brief fire? (default 3:30pm your local timezone)." Accept any format like `3:30pm`, `15:30`, `4pm`. Store as 24-hour.
 
 3. **Weekend runs**: "Skip weekends? (default yes — most people don't want weekend briefs.)" Yes → weekdays only. No → include Saturday + Sunday.
 
