@@ -77,6 +77,17 @@ In Claude Code:
 • `/briefs:config` — change a config field via chat ("change morning to 8am", "add Salesforce as an integration")
 • `/briefs:setup` — re-run the full setup wizard
 
+Ask about your tasks — just type any of these in Claude Code:
+• "What should I prioritize today?"
+• "What's overdue?"
+• "What do I need to do next?"
+• "What's on my plate this week?"
+• "What did I get done this week?"
+• "Show me everything for [goal]"
+• "How's my workload?"
+• "What's Sid working on?" (filter by owner)
+• "Find the task about <topic>"
+
 Or just talk to Claude naturally — "run my morning brief", "what's in my brief config?", "add Sid to my team", etc. Slash commands are shortcuts, not requirements.
 
 Direct file edit:

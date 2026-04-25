@@ -109,6 +109,22 @@ You don't have to use slash commands. Plain English works too:
 
 Slash commands are just shortcuts.
 
+### Ask about your tasks (any time, in Claude Code)
+
+The plugin includes a `tasks` skill that auto-fires when you ask about your work. No slash command — just type the question in Claude Code:
+
+- "What should I prioritize today?" → returns Top 3 by deadline + blocker
+- "What's overdue?" → all overdue tasks grouped by goal
+- "What do I need to do next?" → next 3 by priority
+- "What's on my plate this week?" → tasks due in next 7 days
+- "What did I get done this week?" → completed tasks since Monday
+- "Show me everything for [goal name]" → filter to one goal
+- "How's my workload?" → snapshot: counts by priority, busiest goals, overdue
+- "What's [name] working on?" → filter by owner (helpful for 1:1 prep)
+- "Find the task about [topic]" → search
+
+You can also modify tasks the same way: "mark X done", "add a task to [goal]: …", "move X to Friday", "bump Y to critical". Same patterns the brief poll uses for Slack thread replies — they work in Claude Code too.
+
 ---
 
 ## The approval loop (the thing that makes this different)

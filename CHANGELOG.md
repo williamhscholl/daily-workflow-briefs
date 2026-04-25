@@ -10,6 +10,27 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.6.0] — 2026-04-24
+
+### Added
+- **`tasks` skill** — auto-fires in Claude Code when the user asks about their work. Reads tasks.md and answers conversationally. Handles:
+  - Priority queries: "What should I prioritize today?" / "What do I need to do next?"
+  - Status queries: "What's overdue?" / "What did I get done this week?" / "What's on my plate this week?"
+  - Goal queries: "Show me everything for [goal]" / "How's my workload?"
+  - Owner queries: "What's [name] working on?" (filter by Owner field)
+  - Lookups: "Find the task about [topic]"
+  - Modifications: "Mark X done" / "Add a task to [goal]: …" / "Move X to Friday" / "Bump Y to critical" — same patterns the brief poll uses for Slack thread replies, now usable directly in Claude Code chat.
+- README now lists task-query examples in a dedicated "Ask about your tasks" section.
+- `/briefs:help` includes task-query examples in its "What you can do" output.
+
+### Why
+Users were already asking task questions naturally in Claude Code, but without a dedicated skill, Claude had to guess where the tasks file lived and how to interpret the question. The new skill triggers reliably on task-related natural language and answers focused on the user's actual work — same level of polish as the morning brief's Top 3 Decisions section, but on-demand.
+
+### Migration from v0.5.x
+No action required — additive feature. The skill auto-activates when the user asks task-related questions in Claude Code. No config changes, no slash commands to learn.
+
+---
+
 ## [v0.5.0] — 2026-04-24
 
 ### Added
