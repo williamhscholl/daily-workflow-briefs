@@ -103,11 +103,21 @@ If `integrations.hubspot` is `on`: scan last 24h for deals where the user is own
 
 ### 3g. Additional integrations (from `config.additional_integrations`)
 
-For each entry `<mcp_name>: <description>`:
-1. Try to invoke the corresponding MCP. If not connected, log "skipped: <name> (MCP not connected)" and continue.
-2. Use the description as guidance. Default: items where the user is owner/assignee/mentioned, last 24h.
-3. Surface 1–3 items per integration as a section labeled with the integration name (e.g. `📞 Intercom (last 24h)`, `💼 Salesforce (last 24h)`).
-4. **Read-only.** Never offer write actions for these in v1, regardless of what the underlying MCP supports.
+Each entry is a structured record with `name`, `source`, and either a `description` (for MCP) or a `gmail_query` + `description` (for Gmail-fallback). Some legacy configs use the simple `name: description` form — treat those as `source: mcp` implicitly.
+
+For each entry:
+
+**Branch on `source`:**
+
+- **`source: mcp`** (or unspecified): Try to invoke the MCP whose name matches. If not connected, log `skipped: <name> (MCP not connected)` and continue. Use `description` as guidance for what to check. Default heuristic: items where the user is owner/assignee/mentioned, last 24h.
+
+- **`source: gmail`**: Use the Gmail MCP with the `gmail_query` field directly as the search filter (e.g. `from:noreply@granola.ai newer_than:1d`). For each matching thread, read the subject + first paragraph (or first 500 chars of body if short). Surface as a brief summary. The `description` field guides what to extract. Common case: meeting transcribers (Granola/Otter/Fireflies/Fathom) → extract "Quick recap" / "Next steps" sections from the email body if present.
+
+Surface 1–3 items per integration as a section labeled with the integration name (e.g. `📞 Intercom (last 24h)`, `🎙 Granola — recent meetings`).
+
+**Read-only.** Never offer write actions for additional integrations in v1, regardless of source or what the underlying MCP supports.
+
+If both an MCP-source entry's MCP fails AND a fallback isn't configured, log clearly: `skipped: <name> — MCP not connected and no Gmail fallback. Use /briefs:config to add a gmail_query if the tool emails you.`
 
 ### 3h. Tasks overdue (from `$tasks_file`)
 

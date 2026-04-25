@@ -55,9 +55,12 @@ Daily Workflow Briefs needs Claude Code MCPs connected to pull signals from your
 
 ---
 
-## Additional integrations (any MCP)
+## Additional integrations (any tool)
 
-The plugin can pull read-only signals from any other MCP you have connected to Claude Code. Examples your team might want:
+The plugin can pull read-only signals from tools beyond the built-ins via two paths:
+
+### Path A — MCP (preferred when available)
+If you have a Claude Code MCP connected for the tool, the plugin calls it directly. Examples:
 
 - **Salesforce** — opportunities, contacts, account activity
 - **Intercom** — conversations assigned to you, recent customer messages
@@ -67,14 +70,32 @@ The plugin can pull read-only signals from any other MCP you have connected to C
 - **Notion** — pages you've recently edited or are mentioned in
 - **Asana** — tasks assigned to you with deadline updates
 
-**How to add one:**
-1. Connect the MCP in Claude Code Settings → MCP Servers (the MCP must exist independently — this plugin doesn't bundle them).
-2. During `/briefs:setup` Step 8 (Additional integrations), or any time via `/briefs:config add Intercom as integration: <description>`, register the integration name + a one-line description of what to check.
-3. The brief skills iterate this list each run, call the MCP, and surface findings as a new section in the brief.
+### Path B — Gmail (when no MCP exists)
+For tools without an MCP but that email you summaries — meeting transcribers, status-update tools, daily-digest products — the plugin can search your Gmail for their emails using the Gmail MCP you already have.
 
-**Hard restrictions (same as built-ins):**
-- Read-only in v1. The plugin won't offer write actions for additional integrations regardless of what the underlying MCP supports.
-- If you want write actions on a specific tool, file an issue requesting first-class support — that requires me to think through the safe-action allowlist for that tool.
+Common email-based tools and their default patterns:
+
+| Tool | Gmail filter |
+|------|--------------|
+| **Granola** (meeting transcriber) | `from:noreply@granola.ai newer_than:1d` |
+| **Otter.ai** | `from:noreply@otter.ai newer_than:1d` |
+| **Fireflies.ai** | `from:noreply@fireflies.ai newer_than:1d` |
+| **Fathom** | `from:no-reply@fathom.video newer_than:1d` |
+| **Loom** | `from:no-reply@loom.com subject:"Recap" newer_than:1d` |
+
+For meeting-transcriber emails specifically, the brief skills extract "Quick recap" and "Next steps" sections from the email body — same pattern as the built-in Zoom integration. Next steps get classified by owner (you vs your team) just like Zoom.
+
+### How to add one
+
+1. **For MCP-backed tools:** connect the MCP in Claude Code Settings → MCP Servers first.
+2. Run `/briefs:config add <tool> as integration: <description>` (MCP path) or `/briefs:config add <tool> via gmail: <pattern>` (Gmail path). Or include them during `/briefs:setup` Step 8.
+3. The brief skills iterate this list each run, call the right MCP, and surface findings as a new section in the brief.
+
+If you say `add granola as integration` and don't have a Granola MCP, the wizard will ask whether to set up the Gmail-fallback form instead.
+
+### Hard restrictions
+- **Read-only in v1.** The plugin won't offer write actions for additional integrations regardless of source.
+- If you want write actions on a specific tool, file an issue requesting first-class support — that requires designing the safe-action allowlist for that tool.
 
 ---
 

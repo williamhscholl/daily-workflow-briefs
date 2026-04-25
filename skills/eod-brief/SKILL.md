@@ -82,11 +82,15 @@ Deals the user owns with activity today: stage changes, new notes, meetings logg
 
 ### 3h. Additional integrations (from `config.additional_integrations`, last 8h)
 
-For each entry `<mcp_name>: <description>`:
-1. Try to invoke the corresponding MCP. If not connected, log "skipped" and continue.
-2. Use the description as guidance. Apply heuristic: items where the user is owner/assignee/mentioned, last 8h, narrow to "what changed today".
-3. Surface 1–3 items per integration as a section labeled with the integration name (e.g. `📞 Intercom`, `💼 Salesforce`).
-4. **Read-only.** Never offer write actions for these in v1.
+Each entry has `name`, `source`, and either `description` (MCP) or `gmail_query` + `description` (Gmail). Legacy `name: description` form is treated as `source: mcp` implicitly.
+
+For each entry:
+
+- **`source: mcp`**: try the MCP whose name matches. If not connected, skip with `skipped: <name> (MCP not connected)`. Use the description as guidance. Heuristic: items where the user is owner/assignee/mentioned, last 8h.
+
+- **`source: gmail`**: use the Gmail MCP with `gmail_query` directly. For each matching thread today, extract subject + first paragraph (or first 500 chars). For meeting-transcriber emails specifically (Granola/Otter/Fireflies/Fathom), look for "Quick recap" or "Next steps" sections and extract them. Classify any "Next steps" by owner (user vs team) the same way Zoom next-steps are classified — surface user's items under `💼 <name> next steps (mine)` and team items under `🧑‍🤝‍🧑 <name> next steps (watching)`.
+
+Surface 1–3 items per integration. **Read-only.** Never offer write actions for these in v1.
 
 ## Step 4 — Synthesize "Tomorrow's top 3 focus"
 

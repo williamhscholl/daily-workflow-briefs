@@ -122,7 +122,7 @@ Run in parallel (same techniques as morning brief — see that skill for MCP det
 - **Slack watch channels**: for each in `config.watch_channels`, `slack_read_channel` without `oldest`, filter by ts.
 - **Slack DMs from team**: for each in `config.team`, `slack_read_channel` with user ID as channel_id, filter by ts.
 - **Saved messages**: `slack_search_public_and_private` with `from:<@{user_id}> is:saved after:<yesterday>`.
-- **Additional integrations** (from `config.additional_integrations`): for each entry `<mcp_name>: <description>`, invoke that MCP and apply the description as guidance. Read-only — surface as new monitoring items in the confirmation, never as work offers.
+- **Additional integrations** (from `config.additional_integrations`): for each entry, branch on `source`. If `mcp`: invoke the MCP matching the `name` and apply the `description` as guidance. If `gmail`: use the Gmail MCP with the `gmail_query` filter directly; for meeting-transcriber emails (Granola/Otter/Fireflies/Fathom), extract "Quick recap" / "Next steps" sections from the body. Either way: read-only, surface as new monitoring items in the confirmation, never as work offers. If both paths fail (MCP missing AND no gmail_query configured), skip with a clear "skipped: <name>" log entry.
 
 ### 6a. Dedup (apply aggressively)
 

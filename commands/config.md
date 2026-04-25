@@ -64,13 +64,30 @@ Map the natural-language request to a specific field change. Recognized patterns
 - `turn on jira for projects <KEYS>` → set to `projects:[KEYS]`. Auto-quote reserved JQL words (`"INT"`, `"OR"`, etc.).
 - `turn on/off hubspot` → flip `integrations.hubspot`
 
-### Additional integrations (Salesforce, Intercom, Zendesk, etc.)
-- `add <name> as integration: <description>` → append to `additional_integrations` with the description as the what-to-check string.
-- `add <name> as integration` (no description) → append with default description "items relevant to me, last 24h".
-- `remove <name> integration` → delete matching entry.
-- `change <name> integration to <description>` → update the description string.
+### Additional integrations (Salesforce, Intercom, Zendesk, Granola, Otter, etc.)
 
-Tell the user: "Just so you know — additional integrations are read-only signals only. The plugin won't offer write actions for them in v1."
+Each integration has two possible source types: **MCP** (when the user has a Claude Code MCP for the tool) or **Gmail** (when the tool emails the user, like meeting transcribers).
+
+**MCP form:**
+- `add <name> as integration: <description>` → append `name: <name>, source: mcp, description: <text>`.
+- `add <name>` (no description) → append with default description "items relevant to me, last 24h".
+
+**Gmail form (for tools without MCPs but that email summaries):**
+- `add <name> via gmail: <gmail-query>` → append `name: <name>, source: gmail, gmail_query: <query>, description: <inferred>`.
+- Common patterns the user might give:
+  - Granola: `from:noreply@granola.ai newer_than:1d`
+  - Otter: `from:noreply@otter.ai newer_than:1d`
+  - Fireflies: `from:noreply@fireflies.ai newer_than:1d`
+  - Fathom: `from:no-reply@fathom.video newer_than:1d`
+- If the user says `add granola` (no source specified), check whether they have a Granola MCP connected. If yes → MCP form. If not → ask "I don't see a Granola MCP. Granola emails meeting recaps — should I watch your Gmail for them? If yes, what address does Granola send from? (Default: `noreply@granola.ai`)" Then build the Gmail form.
+
+**Other operations:**
+- `remove <name> integration` → delete matching entry by `name`.
+- `change <name> description to <text>` → update the description string.
+- `change <name> gmail query to <query>` → update the gmail_query (Gmail-source entries only).
+- `switch <name> to gmail (with <query>)` / `switch <name> to mcp` → flip the source for an existing entry.
+
+Tell the user: "Additional integrations are read-only signals only. The plugin won't offer write actions for them in v1, regardless of source."
 
 ### Weekend behavior
 - `enable/disable weekend runs` → flip `run_on_weekends`

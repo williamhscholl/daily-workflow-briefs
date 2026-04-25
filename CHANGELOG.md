@@ -10,6 +10,23 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.3.0] — 2026-04-24
+
+### Added
+- **Gmail-fallback for additional integrations.** Tools that don't have a Claude Code MCP but email you summaries (Granola, Otter, Fireflies, Fathom, Loom) can now be added as integrations using a Gmail search filter. The brief skills search Gmail for matching emails and extract content (recap + next steps for meeting transcribers).
+- New config format for additional integrations supports `source: mcp` (preferred) or `source: gmail` (with `gmail_query` field). Legacy `name: description` entries continue to work as MCP-source.
+- `/briefs:setup` Step 8 now asks which path applies for each integration (MCP vs Gmail) and helps build the Gmail filter using known patterns for common tools.
+- `/briefs:config` accepts `add <tool> via gmail: <pattern>` and `switch <tool> to gmail/mcp` for source changes.
+- Documentation: example Gmail patterns table for common tools in [docs/integrations.md](docs/integrations.md#path-b-gmail-when-no-mcp-exists).
+
+### Changed
+- Brief skills (morning, EOD, poll) now branch on `source` for additional integrations and try both paths cleanly.
+
+### Migration from v0.2.x
+No action required. Existing additional-integration entries (`name: description` form) still work — they're treated as `source: mcp` implicitly. To add Gmail-backed tools, use `/briefs:config add granola via gmail: from:noreply@granola.ai newer_than:1d` or re-run `/briefs:setup`.
+
+---
+
 ## [v0.2.0] — 2026-04-24
 
 **Migration required from v0.1.x.** Plugin renamed from `daily-workflow-briefs` to `briefs`. See [README → Updating](README.md#updating-the-plugin) for the migration command.

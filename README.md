@@ -55,7 +55,7 @@ The briefs read from these tools via Claude Code MCPs:
 
 **Required:** Slack, Google Calendar, Gmail, Zoom
 **Optional:** Atlassian (Jira + Confluence), HubSpot
-**Anything else:** Salesforce, Intercom, Zendesk, Linear, GitHub, Notion, Asana — any MCP you can connect to Claude Code can be added as a read-only signal source during setup
+**Anything else:** Salesforce, Intercom, Zendesk, Linear, GitHub, Notion, Asana — any MCP you can connect to Claude Code can be added as a read-only signal source during setup. Or, for tools that don't have an MCP but email you summaries (Granola, Otter, Fireflies, Fathom), the plugin can watch Gmail for those emails instead. See [docs/integrations.md](docs/integrations.md#additional-integrations-any-tool).
 
 If you don't have them connected already, open the **Claude Code app** (the desktop app — download from [claude.com](https://claude.com) if you don't have it) and connect each via Settings → MCP Servers. See [docs/integrations.md](docs/integrations.md) for details.
 
@@ -265,7 +265,7 @@ Yes. In `/briefs:setup`, set tasks file to `none`. The overdue-tasks section wil
 Roughly $0.15–$0.60/day on Sonnet depending on your poll interval. Morning + EOD are fixed cost (~5k tokens each); poll cost scales with interval.
 
 **Can I add tools beyond the built-in MCPs (Salesforce, Intercom, Zendesk, etc.)?**
-Yes. During setup or via `/briefs:config add Intercom as integration: <description>`, list any MCP you have connected. The brief skills will pull read-only signals from each. Write actions stay restricted to the built-in allowlist.
+Yes. Two paths: (a) if you have a Claude Code MCP for the tool, the plugin calls it directly. (b) If no MCP exists but the tool emails you summaries (e.g. Granola, Otter, Fireflies, Fathom for meeting transcripts), the plugin searches Gmail for those emails using a pattern you provide. Both paths are read-only — no work offers from additional integrations in v1. See [docs/integrations.md](docs/integrations.md#additional-integrations-any-tool) for details and example patterns.
 
 **Does this work with Codex / Gemini / other agents?**
 Not yet. v1 is Claude Code only.

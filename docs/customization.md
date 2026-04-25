@@ -78,16 +78,38 @@ Jira variants:
 HubSpot: `on` or `off`. Always read-mostly — notes only.
 
 ### Additional integrations
+
+Two formats, depending on how the plugin reaches the tool:
+
+**MCP-backed** (preferred, when available):
 ```yaml
 additional_integrations:
-  - intercom: conversations assigned to me last 12h
-  - salesforce: open opportunities I own with stage changes today
-  - zendesk: tickets where I'm CC'd
+  - name: intercom
+    source: mcp
+    description: conversations assigned to me last 12h
+  - name: salesforce
+    source: mcp
+    description: open opportunities I own with stage changes
 ```
 
-Each entry is `<mcp_name>: <what-to-check description>`. The brief skills iterate this list, call the corresponding MCP, and surface findings as a new section in the brief. **Read-only in v1** — no work offers from additional integrations.
+**Gmail-backed** (for tools without an MCP that email you summaries):
+```yaml
+additional_integrations:
+  - name: granola
+    source: gmail
+    gmail_query: from:noreply@granola.ai newer_than:1d
+    description: meeting recaps via email
+  - name: otter
+    source: gmail
+    gmail_query: from:noreply@otter.ai newer_than:1d
+    description: meeting transcripts via email
+```
 
-For each name to work, the corresponding Claude Code MCP must be connected (see [docs/integrations.md](integrations.md)).
+You can mix both forms in the same list. The brief skills iterate this list, branch on `source`, and call the right MCP. **Read-only in v1** — no work offers from additional integrations regardless of source.
+
+See [docs/integrations.md](integrations.md#additional-integrations-any-tool) for the table of common Gmail patterns (Granola, Otter, Fireflies, Fathom, Loom) and how to add new tools.
+
+**Legacy form** (also supported for backward compatibility): a simple `name: description` entry is treated as `source: mcp` implicitly.
 
 ### Schedule
 ```yaml

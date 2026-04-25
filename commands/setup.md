@@ -72,18 +72,48 @@ Ask each in order:
 
 ## Step 8 — Additional integrations (optional)
 
-Ask: "Any other tools you want briefs to scan? Examples: Salesforce, Intercom, Zendesk, Linear, GitHub, Notion, Asana — anything you have a Claude Code MCP connected for. I'll pull read-only signals from each.
+Ask: "Any other tools you want briefs to scan? Examples:
+- Tools with a Claude Code MCP — Salesforce, Intercom, Zendesk, Linear, GitHub, Notion, Asana
+- Tools that email you summaries — Granola (meeting transcriber), Otter, Fireflies, Fathom, Loom
 
-Type the tool name and a one-line description of what to check, e.g.:
+Type `done` when finished, or `skip` if none."
+
+For each one the user names, ask which path applies:
+
+> "How does the plugin reach `<tool>`?
+> 1. Via an MCP I have connected (preferred — works for any current state, real-time)
+> 2. Via Gmail (the tool emails me; I'll watch for messages matching a pattern)
+> 3. I'm not sure — let me check"
+
+### Path 1 (MCP)
+Get a one-line description of what to check, e.g.:
 - `salesforce: open opportunities I own with stage changes today`
 - `intercom: conversations assigned to me in last 12h`
 - `zendesk: tickets where I'm CC'd or watching`
 
-Type `done` when finished, or `skip` if none."
+Store as: `name: <tool>, source: mcp, description: <text>`.
 
-For each entry, store the integration name and what-to-check description.
+### Path 2 (Gmail fallback)
+For email-based tools, ask:
+- "What email address does `<tool>` send from? (Look at a recent recap email.)"
+- "What time window? Default: last 24h."
+- "Anything to call out? Default: just summarize the email subject + first paragraph."
 
-These integrations are read-only by default — no work offers from them in v1. If the user asks for write actions on these tools, tell them: "v1 limits writes to Confluence/Jira/HubSpot/Slack-drafts/tasks.md. Read-only signals from anything else."
+Build a Gmail search query. Common patterns:
+- Granola: `from:noreply@granola.ai newer_than:1d`
+- Otter: `from:noreply@otter.ai newer_than:1d`
+- Fireflies: `from:noreply@fireflies.ai newer_than:1d`
+- Fathom: `from:no-reply@fathom.video newer_than:1d`
+- Loom recap: `from:no-reply@loom.com subject:"Recap" newer_than:1d`
+
+Confirm the pattern with the user before saving. Store as: `name: <tool>, source: gmail, gmail_query: <pattern>, description: <text>`.
+
+### Path 3 (uncertain)
+Tell the user: "Open Claude Code → Settings → MCP Servers and search for `<tool>`. If you find it, connect it and pick option 1. If not, check whether the tool emails you summaries — pick option 2 with the sender's email. If neither, skip for now."
+
+### Restrictions for all additional integrations
+- **Read-only in v1.** No work offers from these tools regardless of source.
+- **Confirm at the end:** show the full list (name, source, description/query) so the user can sanity-check before continuing.
 
 ## Step 9 — Brief times
 
@@ -169,8 +199,13 @@ jira: projects:[AI,OPS,"INT",CLA]
 hubspot: off
 
 ## Additional integrations
-- intercom: conversations assigned to me last 12h
-- salesforce: open opportunities I own with stage changes
+- name: intercom
+  source: mcp
+  description: conversations assigned to me last 12h
+- name: granola
+  source: gmail
+  gmail_query: from:noreply@granola.ai newer_than:1d
+  description: meeting recaps via email
 
 ## Schedule
 morning_time: 07:30
