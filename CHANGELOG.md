@@ -10,6 +10,26 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.4.0] — 2026-04-24
+
+### Added
+- **Meeting transcriber as a first-class config field.** During setup, the wizard now asks "What do you use to transcribe and summarize meetings?" with Zoom as default (option 1) and Granola, Otter, Fireflies, Fathom, Loom as alternatives. Each option auto-configures the correct source (Zoom MCP vs Gmail search) and email pattern.
+- New `meeting_transcriber` block in config with `type`, `source`, and optional `gmail_query` fields.
+- `type: none` option for users who don't use a transcriber — skips meeting next-steps in briefs entirely without breaking other signal-gathering.
+- `type: custom` option for in-house or unsupported transcribers.
+
+### Changed
+- Zoom is no longer auto-required. The Zoom MCP is only required if the user picks Zoom as their transcriber. Slack, Calendar, and Gmail remain required for everyone.
+- Brief skills (morning, EOD, poll) now read `meeting_transcriber` and branch on `type`. Zoom-specific code path is preserved (with all the `has_summary_permission` workarounds intact); Gmail-based transcribers get a separate parsing path that extracts recap + next-steps from email bodies.
+- `/briefs:config change meeting transcriber to <name>` for natural-language updates.
+
+### Migration from v0.3.x
+No action required if you use Zoom — `meeting_transcriber` defaults to Zoom-MCP behavior when the field is absent.
+
+To switch transcribers later: run `/briefs:config change meeting transcriber to granola` (or any other supported tool).
+
+---
+
 ## [v0.3.0] — 2026-04-24
 
 ### Added

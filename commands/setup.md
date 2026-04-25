@@ -56,21 +56,65 @@ Ask: "Any VIPs whose emails and messages always deserve attention? (Your boss, a
 
 Pre-fill common tiers from the role preset (Sales: CEO/CRO; Product: CEO/Head of Eng; etc.) — just ask the user to fill in the names/emails.
 
-## Step 7 — Integrations
+## Step 7 — Built-in integrations
 
 Ask each in order:
 
-**Calendar**: assumed ON (required). Confirm "Google Calendar MCP is connected? (I'll check in Step 11.)"
+**Slack**: required, always on. Confirm "Slack MCP is connected? (I'll verify in Step 12.)"
 
-**Gmail**: assumed ON (required). Same check.
+**Google Calendar**: required, always on. Same check.
 
-**Zoom**: assumed ON (required). Same check.
+**Gmail**: required, always on. Same check.
 
 **Jira**: ask "Do you use Jira? (yes-all / yes-specific-projects / no)". If specific: "Which project keys? e.g. `AI, OPS, CLA`." Remind them: "If any project key is a JQL reserved word (common: `INT`, `OR`, `AND`, `NOT`), I'll quote it automatically."
 
 **HubSpot**: ask "Do you use HubSpot for deals? (yes / no)". If yes: "I'll add read-only deal summaries to briefs and offer to add notes to deals — NEVER change deal stage, amount, or owner. OK?"
 
-## Step 8 — Additional integrations (optional)
+## Step 8 — Meeting transcriber
+
+This is one of the highest-signal sources for daily briefs — meeting recaps tell you who committed to what. Almost everyone uses one of these.
+
+Ask: "What do you use to transcribe and summarize your meetings?
+
+1. **Zoom** (default — most common) — uses the Zoom MCP for AI summaries
+2. **Granola** — uses the Gmail MCP to read Granola's emailed recaps (no Granola MCP exists yet)
+3. **Otter.ai** — same, via Gmail
+4. **Fireflies.ai** — same, via Gmail
+5. **Fathom** — same, via Gmail
+6. **Loom** — same, via Gmail
+7. **None** — I don't use a transcriber
+8. **Custom** — different tool; I'll tell you how to reach it
+
+Type a number (default 1)."
+
+Based on choice, set `meeting_transcriber` in config:
+
+| Choice | type | source | gmail_query |
+|--------|------|--------|-------------|
+| 1. Zoom | `zoom` | `mcp` | (n/a) |
+| 2. Granola | `granola` | `gmail` | `from:noreply@granola.ai newer_than:1d` |
+| 3. Otter | `otter` | `gmail` | `from:noreply@otter.ai newer_than:1d` |
+| 4. Fireflies | `fireflies` | `gmail` | `from:noreply@fireflies.ai newer_than:1d` |
+| 5. Fathom | `fathom` | `gmail` | `from:no-reply@fathom.video newer_than:1d` |
+| 6. Loom | `loom` | `gmail` | `from:no-reply@loom.com subject:"Recap" newer_than:1d` |
+| 7. None | `none` | (n/a) | (n/a) |
+| 8. Custom | (ask) | (ask) | (ask if gmail) |
+
+For Zoom (option 1): tell the user "I'll use the Zoom MCP to pull `summary_plain_text` from each completed meeting. Make sure your Zoom MCP is connected (check in Step 12)."
+
+For Gmail-based options (2–6): tell the user "I'll search your Gmail for `<from-pattern>` and read the recap + next steps from each email body. Make sure your Gmail MCP is connected (already required for built-in signals)."
+
+For None (option 7): tell the user "Got it — meeting next-steps will be skipped. You can add a transcriber later via `/briefs:config`."
+
+For Custom (option 8): ask:
+- Tool name
+- Source: MCP or Gmail?
+- If MCP: tool's MCP name + what to check
+- If Gmail: from-pattern + what time window
+
+**Confirm the choice and pattern back to the user before continuing.**
+
+## Step 9 — Additional integrations (optional)
 
 Ask: "Any other tools you want briefs to scan? Examples:
 - Tools with a Claude Code MCP — Salesforce, Intercom, Zendesk, Linear, GitHub, Notion, Asana
@@ -115,7 +159,7 @@ Tell the user: "Open Claude Code → Settings → MCP Servers and search for `<t
 - **Read-only in v1.** No work offers from these tools regardless of source.
 - **Confirm at the end:** show the full list (name, source, description/query) so the user can sanity-check before continuing.
 
-## Step 9 — Brief times
+## Step 10 — Brief times
 
 Ask each in order, confirming what you heard back:
 
@@ -125,7 +169,7 @@ Ask each in order, confirming what you heard back:
 
 3. **Weekend runs**: "Skip weekends? (default yes — most people don't want weekend briefs.)" Yes → weekdays only. No → include Saturday + Sunday.
 
-## Step 10 — Poll interval
+## Step 11 — Poll interval
 
 Ask: "How often should the throughout-the-day poll run? It checks thread replies, executes approved offers, and scans new signals. More often = more responsive + more tokens. Options:
 
@@ -137,7 +181,7 @@ Ask: "How often should the throughout-the-day poll run? It checks thread replies
 
 Rough token cost per day: 30min ≈ 40–60k tokens, 1hr ≈ 20–30k, 90min ≈ 15k, 2hr ≈ 12k. On Sonnet that's roughly $0.60 / $0.30 / $0.20 / $0.15 per day respectively (varies with activity)."
 
-## Step 11 — Work-offer preview detail
+## Step 12 — Work-offer preview detail
 
 Ask: "When the briefs offer to do work for you, how much detail do you want in the offer message?
 
@@ -148,22 +192,23 @@ Pick one."
 
 Store as `work_offer_preview: summary` or `work_offer_preview: full`.
 
-## Step 12 — Tasks file location
+## Step 13 — Tasks file location
 
 Ask: "Where should I keep your tasks.md? (default `~/.claude/daily-workflow-briefs/tasks.md`, or paste your own path. To skip task tracking entirely, say `none`.)"
 
 If the default doesn't exist yet, tell them: "I'll create it from a starter template so the morning brief has something to read." Copy `templates/tasks.md.starter` from the plugin dir to their chosen path.
 
-## Step 13 — MCP connection check
+## Step 14 — MCP connection check
 
 Check which MCPs are connected (by trying minimal calls or reading `~/.claude/settings.json`):
-- ✓ Required: Slack, Gmail, Google Calendar, Zoom
+- ✓ Required: Slack, Gmail, Google Calendar
+- ✓ Required if `meeting_transcriber.type: zoom`: Zoom MCP
 - Optional based on config: Atlassian/Jira, HubSpot
-- Additional: any from Step 8
+- Additional: any from Step 9
 
 For any missing MCP, tell the user which one and link to `docs/integrations.md` for setup instructions. Warn them briefs will fail or have reduced signal if required MCPs aren't connected by the time the cron fires.
 
-## Step 14 — Write config
+## Step 15 — Write config
 
 Write `~/.claude/daily-workflow-briefs/config.md` in this format. Keep it human-readable — the user may edit it later.
 
@@ -194,18 +239,21 @@ timezone: America/Los_Angeles
 ## Integrations
 calendar: on
 gmail: on
-zoom: on
 jira: projects:[AI,OPS,"INT",CLA]
 hubspot: off
+
+## Meeting transcriber
+type: zoom              # zoom | granola | otter | fireflies | fathom | loom | none | custom
+source: mcp             # mcp | gmail
+# gmail_query: from:noreply@granola.ai newer_than:1d   # only when source: gmail
 
 ## Additional integrations
 - name: intercom
   source: mcp
   description: conversations assigned to me last 12h
-- name: granola
-  source: gmail
-  gmail_query: from:noreply@granola.ai newer_than:1d
-  description: meeting recaps via email
+- name: salesforce
+  source: mcp
+  description: open opportunities I own with stage changes
 
 ## Schedule
 morning_time: 07:30
@@ -221,7 +269,7 @@ eod_lookback_hours: 12
 tasks_file: ~/.claude/daily-workflow-briefs/tasks.md
 ```
 
-## Step 15 — Schedule the three briefs
+## Step 16 — Schedule the three briefs
 
 Use `mcp__scheduled-tasks__create_scheduled_task` three times (confirm with the user before firing each). Use the user's chosen `morning_time`, `eod_time`, `poll_interval_minutes`, and `timezone`. If `run_on_weekends` is true, use `* * *` day-of-week instead of `1-5`.
 
@@ -234,13 +282,13 @@ Use `mcp__scheduled-tasks__create_scheduled_task` three times (confirm with the 
    - Custom: ask for the cron string.
 3. **eod-brief** — cron `<eod_min> <eod_hour> * * <dow>`. Runs the `eod-brief` skill.
 
-## Step 16 — Offer a dry run
+## Step 17 — Offer a dry run
 
 Ask: "Want me to run the morning brief once right now as a dry run? It'll post to your self-DM."
 
 If yes: invoke the `morning-brief` skill immediately.
 
-## Step 17 — Wrap up
+## Step 18 — Wrap up
 
 Show a short summary:
 - ✓ Config at `~/.claude/daily-workflow-briefs/config.md`

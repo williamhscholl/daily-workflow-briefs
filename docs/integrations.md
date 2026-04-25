@@ -22,11 +22,12 @@ Daily Workflow Briefs needs Claude Code MCPs connected to pull signals from your
 - **Permissions needed**: read threads, read message bodies (where available — see known issues below).
 - **Known issue**: the Gmail MCP's `get_thread` silently drops body content on Zoom's "Meeting assets for..." emails (HTML-only). The plugin works around this by going directly to Zoom MCP for meeting content.
 
-### Zoom
+### Zoom (only required if you pick Zoom as your meeting transcriber during setup)
 - **What the plugin uses**: meeting summaries (`summary_plain_text`), meeting next-steps extracted from the summary.
 - **Setup**: Claude Code → Settings → MCP Servers → add the Zoom MCP. OAuth with your Zoom account.
 - **Permissions needed**: search meetings, read meeting assets (summaries).
 - **Known quirk**: `search_meetings` returns a `has_summary_permission` field that looks like an access flag but is actually about sharing with others. The plugin ignores it and checks `meeting_summary.has_permission` in the asset response instead.
+- **Alternative**: if you use Granola, Otter, Fireflies, Fathom, or Loom instead of Zoom for transcripts, pick that during `/briefs:setup` Step 8 — the plugin will read those tools' recap emails via your Gmail MCP instead, no Zoom MCP required.
 
 ---
 

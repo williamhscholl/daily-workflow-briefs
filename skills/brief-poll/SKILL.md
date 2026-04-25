@@ -117,7 +117,7 @@ Window = `config.poll_interval` + 5 min overlap (so nothing falls between polls)
 
 Run in parallel (same techniques as morning brief — see that skill for MCP details and quirks):
 
-- **Zoom new meetings**: `search_meetings` with `from` = (last poll ts) and `to` = now UTC. For each with `has_summary: true`, `get_meeting_assets` and parse next-steps. Classify by owner (user / team / skip).
+- **Meeting transcriber new content**: branch on `config.meeting_transcriber.type`. If `zoom`: `search_meetings` with `from` = (last poll ts) and `to` = now UTC; for each with `has_summary: true`, `get_meeting_assets` and parse next-steps. If Gmail-based (`granola/otter/fireflies/fathom/loom/custom-gmail`): use the configured `gmail_query` to search Gmail since last poll, parse recap + next-steps from each email body. If `none`: skip. Classify next-steps by owner (user / team / skip) the same way regardless of source.
 - **Gmail Jira "work due" digests**: `search_threads` with `subject:"you have work due in Jira" newer_than:1d`. For each hit: get full content, extract ticket blocks, dedup against `tasks.md`, add new ones as monitoring tasks under matching goal.
 - **Slack watch channels**: for each in `config.watch_channels`, `slack_read_channel` without `oldest`, filter by ts.
 - **Slack DMs from team**: for each in `config.team`, `slack_read_channel` with user ID as channel_id, filter by ts.

@@ -37,7 +37,11 @@ Today's events. For each: time range (normalized to `config.timezone`), title, k
 
 **Normalize ALL times to `config.timezone`** — calendar events may come back in mixed TZs (different attendees' zones).
 
-### 3b. Zoom meeting assets — PRIMARY source for meeting content (Zoom MCP — required)
+### 3b. Meeting transcriber — PRIMARY source for meeting content
+
+Read `config.meeting_transcriber`. Branch on `type`:
+
+#### `type: zoom` (default — most common)
 
 For every meeting that happened in the lookback window, pull assets DIRECTLY from Zoom, NOT from Gmail. The Gmail MCP's `get_thread` silently drops body content on Zoom's HTML-only emails — verified broken.
 
@@ -47,11 +51,37 @@ For every meeting that happened in the lookback window, pull assets DIRECTLY fro
 3. **IGNORE `has_summary_permission` in the search response.** It refers to sharing with others, NOT the user's access. It's false by default on nearly every meeting. Do NOT gate on it.
 4. For each match where `has_summary: true`: call `get_meeting_assets` with the `meeting_uuid`. The real access flag is `meeting_summary.has_permission` inside the asset response. If that's false, skip with "content unavailable".
 5. Extract ONLY `meeting_summary.summary_plain_text`. DO NOT read `recording.transcripts` — can be 150k+ chars per meeting.
-6. Parse the `Next steps` block. Each line starts with an assignee name followed by a colon. Classify by owner:
-   - **User** (match against display name from config — try first name, last name, full name) → `💼 Meeting Next Steps — Mine`
-   - **Team members** (match against `config.team`) → `🧑‍🤝‍🧑 Meeting Next Steps — Team`
-   - Others → skip unless it's a blocker on a user/team deliverable
+6. Parse the `Next steps` block — each line is `<name>: <action>`. Classify by owner:
+   - **User** (match against display_names — first/last/full) → `💼 Meeting Next Steps — Mine`
+   - **Team** (match against `config.team`) → `🧑‍🤝‍🧑 Meeting Next Steps — Team`
+   - Others → skip unless blocker on user/team deliverable
 7. If `has_summary: false`, fall back to Gmail email subject line only (no body) — flag as "content unavailable".
+
+#### `type: granola | otter | fireflies | fathom | loom` (Gmail-based)
+
+These tools email meeting recaps. Use the Gmail MCP with `config.meeting_transcriber.gmail_query` directly (it's already a Gmail search filter, e.g. `from:noreply@granola.ai newer_than:1d`).
+
+**Workflow:**
+1. `search_threads` with the configured `gmail_query`.
+2. For each matching thread (within the lookback window, dedup by message ID):
+   - `get_thread` with `FULL_CONTENT` to read the body.
+   - Parse the body for "Quick recap" / "Summary" sections — most transcribers structure their emails this way.
+   - Parse for a "Next steps" / "Action items" block. Each item typically starts with a name or @-mention.
+   - Classify next-steps the same way as Zoom: user → mine, team → watching, others → skip.
+3. Surface 1–2 sentences from the recap per meeting in `📅 Today's Meetings` (annotate the calendar entry).
+4. If the email body is malformed or doesn't have parseable recap/next-steps, fall back to subject + first paragraph and flag as "structured parse failed — raw summary".
+
+**If `gmail_query` returns zero results in the lookback window:** that's normal — no meetings ended in this window. Skip silently.
+
+#### `type: none`
+
+Skip Step 3b entirely. Don't surface a "Meeting Next Steps" section. Briefs still post calendar (Step 3a) and other signals.
+
+#### `type: custom`
+
+Look at `config.meeting_transcriber.source`:
+- If `mcp`: invoke the MCP whose name matches `config.meeting_transcriber.mcp_name` (or fall back to `type` field). Use `description` as guidance. Apply the same owner-classification logic if the response includes structured next-steps.
+- If `gmail`: use `gmail_query` exactly like the named-Gmail variants above.
 
 ### 3c. Gmail (Gmail MCP — required)
 

@@ -65,7 +65,6 @@ VIPs drive Gmail priority. Threads from VIPs always surface; threads from others
 integrations:
   calendar: on
   gmail: on
-  zoom: on
   jira: projects:[AI,OPS,"INT",CLA]
   hubspot: off
 ```
@@ -76,6 +75,21 @@ Jira variants:
 - `jira: projects:[KEY1,KEY2,...]` — limit to specific project keys. Quote reserved words (`"INT"`, `"OR"`, etc.).
 
 HubSpot: `on` or `off`. Always read-mostly — notes only.
+
+### Meeting transcriber
+```yaml
+meeting_transcriber:
+  type: zoom              # zoom | granola | otter | fireflies | fathom | loom | none | custom
+  source: mcp             # mcp | gmail
+  # gmail_query: from:noreply@granola.ai newer_than:1d   # only when source: gmail
+```
+
+The transcriber is the source for the high-signal "Meeting Next Steps — Mine / Team" sections in briefs. Pick during setup; change later via `/briefs:config change meeting transcriber to <name>`.
+
+- `zoom` (default) — uses the Zoom MCP, calls `search_meetings` + `get_meeting_assets`, extracts `summary_plain_text` and parses `Next steps` block. Requires Zoom MCP connected.
+- `granola | otter | fireflies | fathom | loom` — uses the Gmail MCP to read recap emails matching `gmail_query`. Wizard pre-fills the right pattern for each.
+- `none` — skip meeting next-steps entirely. Briefs still post calendar + other signals.
+- `custom` — provide your own MCP name or Gmail query. Useful for in-house transcribers or tools the wizard doesn't know about.
 
 ### Additional integrations
 

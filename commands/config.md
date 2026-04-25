@@ -64,6 +64,20 @@ Map the natural-language request to a specific field change. Recognized patterns
 - `turn on jira for projects <KEYS>` → set to `projects:[KEYS]`. Auto-quote reserved JQL words (`"INT"`, `"OR"`, etc.).
 - `turn on/off hubspot` → flip `integrations.hubspot`
 
+### Meeting transcriber
+The meeting transcriber is a top-level field, not in `additional_integrations`. Patterns:
+- `change meeting transcriber to zoom` → set `meeting_transcriber: { type: zoom, source: mcp }`.
+- `change meeting transcriber to granola` (or otter / fireflies / fathom / loom) → set `meeting_transcriber: { type: <name>, source: gmail, gmail_query: <known pattern> }`. Use the table below for default patterns.
+- `change meeting transcriber to none` → set `meeting_transcriber: { type: none }`. Skips meeting next-steps in briefs entirely.
+- `change meeting transcriber to custom: <details>` → ask the user for source (mcp/gmail), MCP name OR Gmail filter, and what to extract. Set `meeting_transcriber: { type: custom, ... }`.
+
+Default Gmail patterns:
+- Granola: `from:noreply@granola.ai newer_than:1d`
+- Otter: `from:noreply@otter.ai newer_than:1d`
+- Fireflies: `from:noreply@fireflies.ai newer_than:1d`
+- Fathom: `from:no-reply@fathom.video newer_than:1d`
+- Loom: `from:no-reply@loom.com subject:"Recap" newer_than:1d`
+
 ### Additional integrations (Salesforce, Intercom, Zendesk, Granola, Otter, etc.)
 
 Each integration has two possible source types: **MCP** (when the user has a Claude Code MCP for the tool) or **Gmail** (when the tool emails the user, like meeting transcribers).

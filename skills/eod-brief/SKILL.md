@@ -29,7 +29,11 @@ Today's events that already started before now. For each:
 
 Pair with Zoom next-steps (step 3b) to annotate what came out of each meeting.
 
-### 3b. Zoom meeting assets (Zoom MCP — primary source)
+### 3b. Meeting transcriber (primary source for meeting content)
+
+Read `config.meeting_transcriber`. Branch on `type`:
+
+#### `type: zoom`
 
 For each calendar event that ended before now: `search_meetings` with `q` = topic keywords, narrow `from`/`to` to the meeting window.
 
@@ -40,11 +44,27 @@ For each match with `has_summary: true`: `get_meeting_assets` with the UUID. Rea
 Extract ONLY `meeting_summary.summary_plain_text`. Never read transcripts (150k+ chars).
 
 Parse the `Next steps` block. Classify each action:
-- **User** (match config display_names — first/last/full) → `💼 Zoom next steps (mine)`
+- **User** (match `display_names` — first/last/full) → `💼 Meeting next steps (mine)`
 - **Team** (from `config.team`) → `🧑‍🤝‍🧑 Team next steps (watching)`
 - Others → skip unless blocker on user/team deliverable
 
 Use `Quick recap` to annotate each meeting in `📅 Meetings attended`.
+
+#### `type: granola | otter | fireflies | fathom | loom` (Gmail-based)
+
+Use the Gmail MCP with `config.meeting_transcriber.gmail_query` (a Gmail search filter like `from:noreply@granola.ai newer_than:1d`).
+
+For each matching thread today:
+- `get_thread` with `FULL_CONTENT`.
+- Parse body for "Quick recap" / "Summary" sections (annotate `📅 Meetings attended`).
+- Parse for "Next steps" / "Action items" block. Classify each item by owner same as Zoom — user under `💼 Meeting next steps (mine)`, team under `🧑‍🤝‍🧑 Team next steps (watching)`, others skipped.
+- Fall back to subject + first paragraph if structured parse fails.
+
+#### `type: none`
+Skip Step 3b entirely. Briefs still post calendar (Step 3a) and other signals.
+
+#### `type: custom`
+Branch on `source` — `mcp` uses `mcp_name`, `gmail` uses `gmail_query` — same logic as morning-brief Step 3b.
 
 ### 3c. Gmail — Jira "work due" digests from today (if jira integration on)
 

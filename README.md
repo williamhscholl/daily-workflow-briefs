@@ -53,9 +53,10 @@ claude plugin install briefs@briefs
 
 The briefs read from these tools via Claude Code MCPs:
 
-**Required:** Slack, Google Calendar, Gmail, Zoom
+**Required:** Slack, Google Calendar, Gmail
+**Meeting transcriber** (you pick one during setup): Zoom (default — uses Zoom MCP), or Granola / Otter / Fireflies / Fathom / Loom (uses Gmail to read their emailed recaps), or None
 **Optional:** Atlassian (Jira + Confluence), HubSpot
-**Anything else:** Salesforce, Intercom, Zendesk, Linear, GitHub, Notion, Asana — any MCP you can connect to Claude Code can be added as a read-only signal source during setup. Or, for tools that don't have an MCP but email you summaries (Granola, Otter, Fireflies, Fathom), the plugin can watch Gmail for those emails instead. See [docs/integrations.md](docs/integrations.md#additional-integrations-any-tool).
+**Anything else:** Salesforce, Intercom, Zendesk, Linear, GitHub, Notion, Asana — any MCP you can connect to Claude Code can be added as a read-only signal source during setup. Or, for tools that don't have an MCP but email you summaries, the plugin can watch Gmail for those emails instead. See [docs/integrations.md](docs/integrations.md#additional-integrations-any-tool).
 
 If you don't have them connected already, open the **Claude Code app** (the desktop app — download from [claude.com](https://claude.com) if you don't have it) and connect each via Settings → MCP Servers. See [docs/integrations.md](docs/integrations.md) for details.
 
@@ -72,6 +73,7 @@ Claude walks you through configuration in chat:
 - Enter your Slack user ID + self-DM channel (help text tells you where to find them)
 - Paste your team members' Slack IDs
 - List your VIPs (emails)
+- **Pick your meeting transcriber** (Zoom default; or Granola / Otter / Fireflies / Fathom / Loom; or None)
 - **List any other tools you want briefs to scan** (Salesforce, Intercom, Zendesk, etc.)
 - Pick your morning + EOD times and timezone
 - Pick a poll interval
