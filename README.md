@@ -163,14 +163,70 @@ Each role file documents what signals get prioritized, typical work offers, and 
 
 ## Updating the plugin
 
-When new features ship to this repo, update with:
+**Updates are 100% manual — nothing auto-updates.** You stay on whatever version you installed until you explicitly run an update command. If you never want to update, you never have to.
+
+### Preview what's in a new version BEFORE updating
+
+1. Open the [CHANGELOG.md](CHANGELOG.md) — every version's changes are documented there, newest first.
+2. Or compare your installed version to `main` directly:
+   ```
+   https://github.com/williamhscholl/daily-workflow-briefs/compare/v0.2.0...main
+   ```
+   Replace `v0.2.0` with whatever version you currently have. GitHub will show every line that changed.
+3. Or browse the commits at [github.com/williamhscholl/daily-workflow-briefs/commits/main](https://github.com/williamhscholl/daily-workflow-briefs/commits/main). Each commit message describes the change.
+
+If you don't like what you see, just don't update. Your installed version keeps working forever.
+
+### Update commands
+
+When you decide to update:
 
 ```bash
 claude plugin marketplace update briefs
 claude plugin update briefs@briefs
 ```
 
-Your config and tasks.md are preserved — only the plugin logic refreshes.
+Your config and tasks.md are preserved — only the plugin logic refreshes. After updating, check [CHANGELOG.md](CHANGELOG.md) for any migration steps the new version requires.
+
+### If a new version breaks something for you
+
+Roll back by reinstalling the previous tagged release:
+```bash
+claude plugin uninstall briefs
+claude plugin marketplace remove briefs
+git clone --branch v0.2.0 https://github.com/williamhscholl/daily-workflow-briefs ~/briefs-v0.2.0
+claude plugin marketplace add ~/briefs-v0.2.0
+claude plugin install briefs@briefs
+```
+
+(Replace `v0.2.0` with whichever earlier version you want.) Then file an issue at [github.com/williamhscholl/daily-workflow-briefs/issues](https://github.com/williamhscholl/daily-workflow-briefs/issues) describing what broke.
+
+---
+
+## Privacy & data
+
+**Everything you care about stays on your machine.** This plugin doesn't phone home, doesn't send telemetry, doesn't log to any external service. The plugin author (and anyone else) cannot see your data.
+
+### What stays local
+- **Your config**: `~/.claude/daily-workflow-briefs/config.md` — Slack IDs, team list, VIP emails, integration settings.
+- **Your tasks.md**: same directory. Never leaves your machine unless you put it on a synced drive yourself.
+- **The offers ledger and poll log**: same directory. Internal bookkeeping only.
+
+### What flows through your own connections
+- **Slack content** flows through your own Slack OAuth token via the Slack MCP you connected to Claude Code. The plugin author has no access to it.
+- **Gmail / Google Calendar / Zoom / Jira / HubSpot / additional integrations**: same — your own OAuth tokens, your own MCP connections, your own data.
+- **Briefs post to your Slack self-DM only** (a DM with yourself — no one else can see it).
+
+### What goes to Anthropic's API
+This is a Claude Code plugin, so when a brief runs, the signals it gathers (your Slack messages, Gmail threads, Zoom summaries, etc.) get sent to Anthropic's API for Claude to reason over. That's how Claude Code works — the same data path applies to any Claude Code session you've ever run. [Anthropic's data-handling policy](https://www.anthropic.com/legal/privacy) covers this. The plugin doesn't send anything *additional* to Anthropic beyond what Claude Code itself would send.
+
+### Open-source trust model
+Like any open-source plugin, when you install or update, you pull and execute code from this GitHub repo. If the author (or someone with write access) ever pushed something malicious, an `update` command would propagate it to your machine. This is the standard trust model for `npm`, `pip`, GitHub Actions, etc. Mitigations:
+- Updates are manual (see above) — you choose when, after reading the changelog.
+- The plugin code is text-only (markdown skill specs and a JSON manifest) — no compiled binaries, no shell scripts. Easy to audit by skimming the files.
+- You can pin to a tagged version and never update if you want.
+
+If you have specific compliance requirements (SOC 2, HIPAA, GDPR data residency rules), this plugin doesn't add anything beyond what Claude Code itself does — talk to your security team about whether Claude Code is approved in your environment first.
 
 ---
 
