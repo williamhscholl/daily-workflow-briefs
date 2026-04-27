@@ -35,12 +35,12 @@ Concrete example from `tasks.md`:
 ## GOAL: Q2 Product Roadmap
 **Owner:** You | **Priority:** Critical | **Due:** 2026-04-21
 **Confluence:** https://your-wiki/q2-roadmap
-**Context:** Q2 gate review held Apr 14. Direction confirmed on calendar build...
+**Context:** Q2 prioritization completed Apr 14. Direction confirmed on calendar build...
 
 ### Tasks
-- [ ] [CRITICAL] Run Pulpo transcript through Claude — clean up Q2 doc | Owner: You
-- [ ] [HIGH]     Sync with Sohrab on effort estimations | Owner: You + Sohrab | Due: 2026-04-20
-- [ ] [MEDIUM]   Review CompAi policies pending approval | Owner: You
+- [ ] [CRITICAL] Review meeting transcript — clean up Q2 doc | Owner: You
+- [ ] [HIGH]     Meet with tech leads on effort estimations | Owner: You + John | Due: 2026-04-20
+- [ ] [MEDIUM]   Review SOC 2 policies pending approval | Owner: You
 - [x]            Synthesize calendar survey responses
 ```
 
@@ -53,18 +53,18 @@ Have direct reports? Collaborate with a team you pass work between? Waiting on c
 It applies at both levels:
 
 - **A whole goal can be MONITORING** — use `## MONITORING:` instead of `## GOAL:` when someone else is driving the project but you need to keep tabs (a vendor evaluation owned by a direct report, a customer escalation a teammate is fixing, an external partnership in motion).
-- **An individual task can be `[MONITORING]`** — use this in place of `[CRITICAL]` / `[HIGH]` / `[MEDIUM]` / `[LOW]` when you're watching for movement rather than doing the work yourself ("Sebastian: deliver PUL-244 fix" — assigned to Sebastian, you check in, you don't ship it).
+- **An individual task can be `[MONITORING]`** — use this in place of `[CRITICAL]` / `[HIGH]` / `[MEDIUM]` / `[LOW]` when you're watching for movement rather than doing the work yourself ("Alex: deliver ENG-122 fix" — assigned to Alex, you check in, you don't ship it).
 
 ```markdown
-## MONITORING: FullStory Replacement
-**Owner:** Heghine | **Priority:** High
-- [ ] [HIGH]       Heghine: comparison slides for review | Owner: Heghine | Due: 2026-04-17
-- [ ] [MONITORING] Heghine: document eval notes in Confluence | Owner: Heghine
+## MONITORING: Session Replay Evaluation
+**Owner:** Helen | **Priority:** High
+- [ ] [HIGH]       Helen: comparison slides for review | Owner: Helen | Due: 2026-04-17
+- [ ] [MONITORING] Helen: document eval notes in Confluence | Owner: Helen
 
 ## GOAL: Q2 Product Roadmap
 **Owner:** You | **Priority:** Critical
-- [ ] [CRITICAL]   Run Pulpo transcript through Claude — clean up Q2 doc | Owner: You
-- [ ] [MONITORING] Sebastian: deliver PUL-244 Intercom fix | Owner: Sebastian
+- [ ] [CRITICAL]   Review meeting transcript — clean up Q2 doc | Owner: You
+- [ ] [MONITORING] Alex: deliver ENG-122 fix | Owner: Alex
 ```
 
 In practice, `[MONITORING]` tasks don't compete with your own work in priority queries — when you ask "what should I prioritize today?", they drop out (they aren't Critical/High/Medium/Low). They surface when you ask "what's [name] working on?", scan a specific goal, or when the underlying signal moves (a Slack mention, a Jira status change, a comment) — so you spend attention on action items, not status-watching.
