@@ -165,6 +165,7 @@ Every plugin command is namespaced under `briefs:`. Slash commands and plain Eng
 | `/briefs:run poll` | "run my poll now" / "process my Slack replies" | Run the poll now — **use this after approving offers in Slack** to apply them instantly instead of waiting for the scheduled poll |
 | `/briefs:help` | "what's in my brief config?" / "how do I use this?" | Show your current config + scheduled times + recent run stats + usage tips |
 | `/briefs:config` | "change my morning to 8am" / "add Sid to my team" | Edit a single config field via chat |
+| `/briefs:monitoring` | "what am I waiting on?" / "what does Sid owe me?" | Show what's owed to you — tasks where the owner isn't you, grouped by owner. Optional arg: a name to filter, or `today` / `this week` to narrow. |
 
 You can also make config changes without a slash command at all:
 - "change my poll interval to 90 minutes"
@@ -178,15 +179,20 @@ The plugin includes a `tasks` skill that auto-fires when you ask about your work
 
 | You say | What you get |
 |---------|-------------|
-| "What should I prioritize today?" | Top 3 by deadline + who's blocked on you |
-| "What's overdue?" | All overdue tasks grouped by goal |
+| "What should I prioritize today?" | **Two parallel sections:** 🎯 your work today + 👁 owed to you / watching today |
+| "What's overdue?" | 🔴 yours overdue + ⏳ owed to you (overdue), grouped by owner |
 | "What do I need to do next?" | Next 3 by priority |
-| "What's on my plate this week?" | Tasks due in the next 7 days |
+| "What's on my plate this week?" | Tasks due in the next 7 days, your work + watching items |
 | "What did I get done this week?" | Completed tasks since Monday |
 | "Show me everything for [goal name]" | All open + completed tasks for that goal |
-| "How's my workload?" | Snapshot: counts by priority, busiest goals, overdue |
+| "How's my workload?" | Snapshot: 🎯 your work counts + 👁 watching counts (top owners, overdue) |
 | "What's [name] working on?" | Tasks filtered by owner — great for 1:1 prep |
+| "What am I waiting on?" / "What am I watching?" | All yours-to-watch items, grouped by owner, overdue first |
+| "What does [name] owe me?" | Watching items filtered to that owner |
+| "What is owed to me today?" / "...this week?" | Watching items narrowed by time window |
 | "Find the task about [topic]" | Full-text search across tasks + notes |
+
+**About monitoring** — see [How your work is organized → MONITORING](#monitoring--what-you-watch-vs-what-you-owe) for the data model. Tasks where the owner isn't you and either the parent goal is `## MONITORING:` or the priority tag is `[MONITORING]` show up in the watching queries above. The owner check trumps the goal-level marker — a `## MONITORING:` goal can contain a task you own personally, and that task goes in your action list, not your watching list.
 
 You can also modify tasks in plain English: "mark X done", "add a task to [goal]: …", "move X to Friday", "bump Y to critical". Same patterns the brief poll uses for Slack thread replies — they work in Claude Code too.
 

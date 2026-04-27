@@ -74,18 +74,22 @@ In Claude Code:
 • `/briefs:run morning` — trigger morning brief now
 • `/briefs:run poll` — process your Slack approvals now (don't wait for scheduled poll)
 • `/briefs:run eod` — trigger EOD brief now
+• `/briefs:monitoring` — show what's owed to you (yours-to-watch tasks, grouped by owner). Optional arg: a name, `today`, or `this week`
 • `/briefs:config` — change a config field via chat ("change morning to 8am", "add Salesforce as an integration")
 • `/briefs:setup` — re-run the full setup wizard
 
 Ask about your tasks — just type any of these in Claude Code:
-• "What should I prioritize today?"
-• "What's overdue?"
+• "What should I prioritize today?" (now returns 🎯 your work + 👁 owed to you)
+• "What's overdue?" (yours + owed to you, side-by-side)
+• "What am I waiting on?" / "What am I watching?"
+• "What does Sid owe me?"
+• "What is owed to me today?" / "...this week?"
 • "What do I need to do next?"
 • "What's on my plate this week?"
 • "What did I get done this week?"
 • "Show me everything for [goal]"
 • "How's my workload?"
-• "What's Sid working on?" (filter by owner)
+• "What's Sid working on?" (filter by owner — shows tasks Sid owns regardless of bucket)
 • "Find the task about <topic>"
 
 Or just talk to Claude naturally — "run my morning brief", "what's in my brief config?", "add Sid to my team", etc. Slash commands are shortcuts, not requirements.

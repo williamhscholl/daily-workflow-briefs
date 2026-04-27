@@ -149,18 +149,31 @@ Surface 1–3 items per integration as a section labeled with the integration na
 
 If both an MCP-source entry's MCP fails AND a fallback isn't configured, log clearly: `skipped: <name> — MCP not connected and no Gmail fallback. Use /briefs:config to add a gmail_query if the tool emails you.`
 
-### 3h. Tasks overdue (from `$tasks_file`)
+### 3h. Tasks: yours-overdue + owed-to-you (from `$tasks_file`)
 
-Parse tasks.md. List overdue tasks (due < today in `config.timezone`) grouped by goal. Limit to ~10, Critical > High > Medium. Include a one-line total ("X overdue across Y goals"). If `$tasks_file` doesn't exist or is empty, skip this section.
+Parse tasks.md. Apply the **yours-to-do vs. yours-to-watch** classification (see the `tasks` skill, Step 1.5 — same logic):
+
+- **Yours to do**: task `Owner:` includes the user (display_names, "You", "Will", "Me", first-name match).
+- **Yours to watch**: `Owner:` does NOT include the user, AND (parent goal heading is `## MONITORING:` OR task priority is `[MONITORING]`).
+- The owner check trumps the goal-level marker — a `## MONITORING:` goal can contain a Will-owned task that goes in the *yours-to-do* bucket.
+
+Produce TWO outputs:
+
+**Yours overdue** — yours-to-do tasks where due < today in `config.timezone`. Grouped by goal. Limit ~10, Critical > High > Medium. Include a one-line total ("X overdue across Y goals").
+
+**Owed to you** — yours-to-watch tasks where due < today (overdue) OR due = today. Grouped by owner. Within owner: overdue first (most overdue → least), then due-today. Limit ~7. Include a one-line total ("X items across Y people").
+
+If `$tasks_file` doesn't exist or is empty, skip both. If only one bucket has content, render only that one.
 
 ## Step 4 — Synthesize "Top 3 Decisions Today"
 
-Three most consequential actions TODAY. Criteria:
-- Deadline in next 24–48h
-- Someone (leadership, customer, eng) waiting on the user
-- Blocker surfaced in the signals above
+Three most consequential actions TODAY. Decisions can come from EITHER bucket:
+- **Yours-to-do** items: deadline in next 24–48h, blocker surfaced in signals, leadership/customer/eng waiting on the user
+- **Yours-to-watch** items: critically overdue (e.g. "chase Heghine on FullStory slides — overdue 10 days") or blocking your own work
 
-Each decision: one verb-first action + the reason + the deadline. Use `reply to / approve / decide between / ship / escalate / chase` — not "think about X".
+Don't always pick three from one bucket — mix when both have urgent items. A "chase X" or "escalate Y" decision is just as valid as a "ship Z" decision when someone's been sitting on a deliverable.
+
+Each decision: one verb-first action + the reason + the deadline. Use `reply to / approve / decide between / ship / escalate / chase / nudge` — not "think about X".
 
 ## Step 5 — Synthesize "🤝 Work I can do for you"
 
@@ -207,6 +220,10 @@ Post ONE message to `config.slack_self_dm` via `slack_send_message`. Skip sectio
 
 🔴 *Overdue*
 • Goal → [PRIORITY] Task (was due Month Day)
+
+⏳ *Owed to You*
+• Owner — [PRIORITY] Task (overdue N days, Goal)
+• Owner — [PRIORITY] Task (due today, Goal)
 
 📝 *Meeting Next Steps — Mine*
 • [From: Meeting Title] Action text

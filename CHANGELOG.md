@@ -10,6 +10,44 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.7.0] — 2026-04-27
+
+**Theme:** make MONITORING a first-class part of the daily decision-driving flow.
+
+Until now, MONITORING was a documentation concept (added in v0.6.3) that the skills handled emergently — `[MONITORING]` tasks dropped out of priority queries only because they weren't tagged Critical/High/Medium/Low. v0.7.0 makes the contract explicit and surfaces what's owed to you alongside what you owe.
+
+### Added
+- **Tasks skill: explicit yours-to-do vs. yours-to-watch classification.** New "Step 1.5" in [`skills/tasks/SKILL.md`](skills/tasks/SKILL.md) defines the rule once and reuses it across queries:
+  - **Yours to do** — task `Owner:` includes the user
+  - **Yours to watch** — `Owner:` is someone else AND (parent goal is `## MONITORING:` OR priority is `[MONITORING]`)
+  - The owner check trumps the goal-level marker — a `## MONITORING:` goal with `Owner: <you>` task is in your action list, not your watching list.
+- **New `Monitoring / waiting on / owed to you` query type** in the tasks skill. Triggers: "what am I waiting on?", "what am I watching?", "what's owed to me [today/this week]?", "what does [name] owe me?", "show me monitoring", "monitoring". Output: grouped by owner, overdue first, then by earliest due date.
+- **`/briefs:monitoring` slash command.** Thin wrapper over the new query type. Argument support: `<name>` (filter to that owner), `today`, `this week`, or empty (all).
+- **Parallel sections in priority queries.** "What should I prioritize today?", "what's overdue?", and "what's on my plate this week?" now return TWO sections side-by-side:
+  - 🎯 **Your work** — yours-to-do tasks
+  - 👁 **Owed to you / watching** — yours-to-watch tasks
+  - Either section is omitted silently if empty (no "nothing to watch" noise).
+- **Morning brief `⏳ Owed to You` section.** The morning brief now includes a dedicated section for watching items that are overdue or due today, between `🔴 Overdue` and `📝 Meeting Next Steps — Mine`. Grouped by owner, overdue-first within owner.
+- **Top 3 Decisions can include "chase" or "escalate" actions** when a critical watching item is overdue. The morning brief's Top 3 logic now considers both buckets — a "chase Heghine on FullStory slides — overdue 10 days" decision is just as valid as a "ship Q2 doc cleanup" decision.
+- **Workload summary now reports both buckets.** "How's my workload?" returns 🎯 yours-to-do counts (priority, top goals, overdue, due-this-week) AND 👁 yours-to-watch counts (top owners, overdue, due-this-week).
+
+### Changed
+- `commands/help.md` lists the new monitoring queries and the `/briefs:monitoring` slash command.
+- README's "Ask about your tasks" table updated with the new queries and the parallel-section behavior. New cross-link to the MONITORING data-model section.
+
+### Why
+v0.6.3's README claimed MONITORING items "drop out of priority queries automatically" — but that was emergent behavior, not enforced contract. A user customizing their tasks skill could have regressed it. v0.7.0 makes the rule explicit (Step 1.5) and adds the missing flip side: critically overdue watching items deserve to surface in the daily flow, not just in opt-in queries. If Heghine has owed you slides for 10 days, your morning brief should say so.
+
+### Migration from v0.6.x
+No action required. The classification rule is parsing-only — your existing `tasks.md` works as-is. The new queries and slash command are additive. Output format changes are visible the next time you run a priority query or the morning brief.
+
+If you want to verify the new behavior:
+- Ask Claude: "what am I waiting on?"
+- Run: `/briefs:monitoring`
+- Run: `/briefs:run morning` (look for the new ⏳ Owed to You section)
+
+---
+
 ## [v0.6.3] — 2026-04-27
 
 ### Added
