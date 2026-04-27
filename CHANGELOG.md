@@ -10,6 +10,27 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.6.2] — 2026-04-27
+
+### Added
+- **README "How your work is organized" section.** New top-level section before Quick Start that defines what a *goal* and *task* are, shows a worked example of the `tasks.md` schema (goal metadata + tasks with priority/owner/due/note), and explains the round-trip between Slack approvals and the file. Customization docs now link here from the `tasks_file` config block.
+
+### Changed
+- **README opening rewritten to lead with both halves of the product.** New tagline: "A self-maintaining task list, delivered through Slack." The pitch now explicitly calls out (1) goals/tasks organization and (2) automatic daily refresh as separable value props, instead of foregrounding only the briefs.
+- **Poll confirmation label**: `✅ Board updated` → `✅ Goals updated` in `brief-poll` skill output. End users (especially first-timers) had no shared definition of "board" — `Goals` matches the new README terminology.
+
+### Migration from v0.6.1
+No action required — text-only changes. Next poll will emit "Goals updated" automatically.
+
+---
+
+## [v0.6.1] — 2026-04-25
+
+### Changed
+- README docs polish: new 3-column commands table (slash command / plain-language equivalent / what it does) and dedicated task-query examples table for the `tasks` skill. No behavior changes.
+
+---
+
 ## [v0.6.0] — 2026-04-24
 
 ### Added

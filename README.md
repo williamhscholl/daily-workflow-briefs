@@ -1,6 +1,15 @@
 # Daily Workflow Briefs
 
-**A Claude Code plugin that runs your day via Slack.** Three automated briefs post to your Slack self-DM:
+**A self-maintaining task list, delivered through Slack.**
+
+Briefs does two things at once:
+
+1. **Organizes your work into goals and tasks.** A *goal* is a project or objective you're driving; under each goal sit tasks with a priority, owner, due date, and notes. All stored in plain markdown (`tasks.md`) you can read, edit, or grep any time. No new app to learn, no proprietary database.
+2. **Keeps that list current automatically.** Three briefs post to your Slack self-DM throughout the day, pulling signals from your calendar, Slack, email, Zoom transcripts, and Jira to surface what changed, what's overdue, and what new tasks belong. You approve changes from your phone — no app to open.
+
+The result is a list that stays accurate without you maintaining it. You wake up, your goals are already up to date.
+
+The three briefs:
 
 - 🌤 **Morning brief** — today's meetings, overdue work, meeting next-steps, top-3 decisions
 - 🔄 **Throughout-the-day poll** — processes your thread replies, applies approved work, surfaces new signals
@@ -8,7 +17,36 @@
 
 You pick the exact times and timezone during setup (defaults: 7:30am / 3:30pm weekdays, poll every hour).
 
-Plus a `🤝 Work I can do for you` section that shows up as the first reply to the morning brief and each poll. You approve with `apply 1` / `skip 2` / `edit 1: …` and the plugin executes on the next poll (or instantly if you trigger one manually).
+Each morning brief and poll ends with a `🤝 Work I can do for you` section — concrete actions Claude can take on your behalf. You approve with `apply 1` / `skip 2` / `edit 1: …` and the plugin executes on the next poll (or instantly if you trigger one manually).
+
+---
+
+## How your work is organized
+
+Two levels: **goals** and **tasks**.
+
+A **goal** is a project or objective you're driving — "Q2 Roadmap", "Hire QA Lead", "Roll out feature X". Goals carry their own metadata (owner, priority, target date) plus context: why the goal exists, links to relevant Confluence/Jira/Slack threads, the decision history that brought you here.
+
+A **task** is a discrete to-do under a goal — with a priority (Critical / High / Medium / Low), an owner (you or a teammate), an optional due date, and a note. Open or completed.
+
+Concrete example from `tasks.md`:
+
+```markdown
+## GOAL: Q2 Product Roadmap
+**Owner:** You | **Priority:** Critical | **Due:** 2026-04-21
+**Confluence:** https://your-wiki/q2-roadmap
+**Context:** Q2 gate review held Apr 14. Direction confirmed on calendar build...
+
+### Tasks
+- [ ] [CRITICAL] Run Pulpo transcript through Claude — clean up Q2 doc | Owner: You
+- [ ] [HIGH]     Sync with Sohrab on effort estimations | Owner: You + Sohrab | Due: 2026-04-20
+- [ ] [MEDIUM]   Review CompAi policies pending approval | Owner: You
+- [x]            Synthesize calendar survey responses
+```
+
+That's the whole data model. Plain markdown, version-controllable, editable in any text editor or in Claude Code. The briefs read and write this file directly — and so can you. When you `apply 3` from Slack, the poll edits `tasks.md` and posts a `✅ Goals updated` confirmation in-thread. When you ask Claude "what's overdue?", it reads the same file.
+
+> Don't want the task layer? Set `tasks_file: none` during setup and the briefs run as pure summarizers — no goal/task tracking, just signal aggregation.
 
 ---
 

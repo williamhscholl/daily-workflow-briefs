@@ -140,6 +140,8 @@ Custom poll intervals: set `poll_interval_minutes` to any value (e.g. 45). The s
 tasks_file: ~/.claude/daily-workflow-briefs/tasks.md
 ```
 
+The tasks file uses a two-level **goals → tasks** structure (each goal carries owner/priority/context; tasks carry priority/owner/due/note). See [README → How your work is organized](../README.md#how-your-work-is-organized) for the full schema and a worked example.
+
 To disable task management entirely: `tasks_file: none`. The overdue-tasks section will be omitted from briefs; the poll won't edit any file.
 
 ### Behavior
