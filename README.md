@@ -44,6 +44,33 @@ Concrete example from `tasks.md`:
 - [x]            Synthesize calendar survey responses
 ```
 
+### MONITORING — what you watch vs. what you owe
+
+Not all your work is yours to drive. Some of it is yours to *watch*.
+
+Have direct reports? Collaborate with a team you pass work between? Waiting on confirmation, approval, or a delivery from someone else? Mark it as **MONITORING** so you can tell at a glance what you owe vs. what you're tracking.
+
+It applies at both levels:
+
+- **A whole goal can be MONITORING** — use `## MONITORING:` instead of `## GOAL:` when someone else is driving the project but you need to keep tabs (a vendor evaluation owned by a direct report, a customer escalation a teammate is fixing, an external partnership in motion).
+- **An individual task can be `[MONITORING]`** — use this in place of `[CRITICAL]` / `[HIGH]` / `[MEDIUM]` / `[LOW]` when you're watching for movement rather than doing the work yourself ("Sebastian: deliver PUL-244 fix" — assigned to Sebastian, you check in, you don't ship it).
+
+```markdown
+## MONITORING: FullStory Replacement
+**Owner:** Heghine | **Priority:** High
+- [ ] [HIGH]       Heghine: comparison slides for review | Owner: Heghine | Due: 2026-04-17
+- [ ] [MONITORING] Heghine: document eval notes in Confluence | Owner: Heghine
+
+## GOAL: Q2 Product Roadmap
+**Owner:** You | **Priority:** Critical
+- [ ] [CRITICAL]   Run Pulpo transcript through Claude — clean up Q2 doc | Owner: You
+- [ ] [MONITORING] Sebastian: deliver PUL-244 Intercom fix | Owner: Sebastian
+```
+
+In practice, `[MONITORING]` tasks don't compete with your own work in priority queries — when you ask "what should I prioritize today?", they drop out (they aren't Critical/High/Medium/Low). They surface when you ask "what's [name] working on?", scan a specific goal, or when the underlying signal moves (a Slack mention, a Jira status change, a comment) — so you spend attention on action items, not status-watching.
+
+---
+
 That's the whole data model. Plain markdown, version-controllable, editable in any text editor or in Claude Code. The briefs read and write this file directly — and so can you. When you `apply 3` from Slack, the poll edits `tasks.md` and posts a `✅ Goals updated` confirmation in-thread. When you ask Claude "what's overdue?", it reads the same file.
 
 > Don't want the task layer? Set `tasks_file: none` during setup and the briefs run as pure summarizers — no goal/task tracking, just signal aggregation.

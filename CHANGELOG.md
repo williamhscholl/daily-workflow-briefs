@@ -10,6 +10,16 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.6.3] — 2026-04-27
+
+### Added
+- **README "MONITORING" section.** New sub-section under "How your work is organized" documenting the third concept in the data model: how to mark goals or tasks you're watching — direct reports, partner teams, items waiting on someone else's confirmation/approval/delivery — vs. work you actively own. Worked example shows both levels (goal-level `## MONITORING:` and task-level `[MONITORING]` priority tag) and explains how MONITORING items behave in priority queries.
+
+### Migration from v0.6.2
+No action required — text-only documentation.
+
+---
+
 ## [v0.6.2] — 2026-04-27
 
 ### Added
