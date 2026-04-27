@@ -90,40 +90,40 @@ Briefs start firing on your schedule. First one lands the next weekday at your c
 
 ## Commands reference
 
-Every plugin command is namespaced under `briefs:`.
+Every plugin command is namespaced under `briefs:`. Slash commands and plain English both work — use whichever feels natural.
 
-| Command | What it does |
-|---------|--------------|
-| `/briefs:setup` | Interactive setup wizard. Run first. Also use to re-configure. |
-| `/briefs:run morning` | Run the morning brief now (useful for testing) |
-| `/briefs:run eod` | Run the EOD brief now |
-| `/briefs:run poll` | Run the poll now — **use this after approving offers in Slack** to apply them instantly instead of waiting for the scheduled poll |
-| `/briefs:help` | Show your current config + scheduled times + recent run stats + usage tips |
-| `/briefs:config` | Edit a single field via chat ("change my morning to 8am", "add Sid to my team", "add Salesforce as integration") |
+| Command | Plain language equivalent | What it does |
+|---------|--------------------------|--------------|
+| `/briefs:setup` | "set up my briefs" | Interactive setup wizard. Run first. Also use to re-configure. |
+| `/briefs:run morning` | "run my morning brief" | Run the morning brief now (useful for testing) |
+| `/briefs:run eod` | "run my EOD brief" | Run the EOD brief now |
+| `/briefs:run poll` | "run my poll now" / "process my Slack replies" | Run the poll now — **use this after approving offers in Slack** to apply them instantly instead of waiting for the scheduled poll |
+| `/briefs:help` | "what's in my brief config?" / "how do I use this?" | Show your current config + scheduled times + recent run stats + usage tips |
+| `/briefs:config` | "change my morning to 8am" / "add Sid to my team" | Edit a single config field via chat |
 
-You don't have to use slash commands. Plain English works too:
-- "run my morning brief"
-- "what's in my brief config?"
+You can also make config changes without a slash command at all:
 - "change my poll interval to 90 minutes"
 - "add Zendesk as an integration: tickets I'm watching"
-
-Slash commands are just shortcuts.
+- "switch my meeting transcriber to Granola"
+- "add Riya to my team"
 
 ### Ask about your tasks (any time, in Claude Code)
 
-The plugin includes a `tasks` skill that auto-fires when you ask about your work. No slash command — just type the question in Claude Code:
+The plugin includes a `tasks` skill that auto-fires when you ask about your work. No slash command — just type the question:
 
-- "What should I prioritize today?" → returns Top 3 by deadline + blocker
-- "What's overdue?" → all overdue tasks grouped by goal
-- "What do I need to do next?" → next 3 by priority
-- "What's on my plate this week?" → tasks due in next 7 days
-- "What did I get done this week?" → completed tasks since Monday
-- "Show me everything for [goal name]" → filter to one goal
-- "How's my workload?" → snapshot: counts by priority, busiest goals, overdue
-- "What's [name] working on?" → filter by owner (helpful for 1:1 prep)
-- "Find the task about [topic]" → search
+| You say | What you get |
+|---------|-------------|
+| "What should I prioritize today?" | Top 3 by deadline + who's blocked on you |
+| "What's overdue?" | All overdue tasks grouped by goal |
+| "What do I need to do next?" | Next 3 by priority |
+| "What's on my plate this week?" | Tasks due in the next 7 days |
+| "What did I get done this week?" | Completed tasks since Monday |
+| "Show me everything for [goal name]" | All open + completed tasks for that goal |
+| "How's my workload?" | Snapshot: counts by priority, busiest goals, overdue |
+| "What's [name] working on?" | Tasks filtered by owner — great for 1:1 prep |
+| "Find the task about [topic]" | Full-text search across tasks + notes |
 
-You can also modify tasks the same way: "mark X done", "add a task to [goal]: …", "move X to Friday", "bump Y to critical". Same patterns the brief poll uses for Slack thread replies — they work in Claude Code too.
+You can also modify tasks in plain English: "mark X done", "add a task to [goal]: …", "move X to Friday", "bump Y to critical". Same patterns the brief poll uses for Slack thread replies — they work in Claude Code too.
 
 ---
 
