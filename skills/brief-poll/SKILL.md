@@ -188,7 +188,7 @@ If ANY of the following occurred, post a thread reply to the relevant brief thre
 *Drafted* (ready for your review)
 • 📝 [what was drafted + where to find it]
 
-*Goals updated*
+*Tasks updated*
 • ➕ Added: <task> (<goal>)
 • ✅ Done: <task> (<goal>)
 • ✏️ Updated: <task> (<goal> — what changed)

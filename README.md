@@ -71,7 +71,7 @@ In practice, `[MONITORING]` tasks don't compete with your own work in priority q
 
 ---
 
-That's the whole data model. Plain markdown, version-controllable, editable in any text editor or in Claude Code. The briefs read and write this file directly — and so can you. When you `apply 3` from Slack, the poll edits `tasks.md` and posts a `✅ Goals updated` confirmation in-thread. When you ask Claude "what's overdue?", it reads the same file.
+That's the whole data model. Plain markdown, version-controllable, editable in any text editor or in Claude Code. The briefs read and write this file directly — and so can you. When you `apply 3` from Slack, the poll edits `tasks.md` and posts a `✅ Tasks updated` confirmation in-thread. When you ask Claude "what's overdue?", it reads the same file.
 
 > Don't want the task layer? Set `tasks_file: none` during setup and the briefs run as pure summarizers — no goal/task tracking, just signal aggregation.
 

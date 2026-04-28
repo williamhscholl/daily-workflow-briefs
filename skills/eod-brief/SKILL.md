@@ -85,7 +85,7 @@ For each new signal, classify:
 
 `slack_search_public_and_private` with `from:<@{slack_user_id}> is:saved after:<today_start_YYYY-MM-DD>`.
 
-Dedup against tasks.md: if a save's URL or Jira key already appears on the board, skip.
+Dedup against tasks.md: if a save's URL or Jira key already appears in tasks, skip.
 
 ### 3f. Jira — last 8h (if jira integration on, lighter than morning)
 
@@ -147,7 +147,7 @@ Post ONE message to `config.slack_self_dm`. Format:
 💬 *Key threads + DMs*
 • [Channel or person] — decision/commitment in one line
 
-💾 *New saves* (not yet on the board)
+💾 *New saves* (not yet in tasks)
 • Sender — summary
 
 📋 *Jira Signals (last 8h)*

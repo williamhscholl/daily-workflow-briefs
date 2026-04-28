@@ -10,6 +10,19 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.7.1] — 2026-04-28
+
+### Changed
+- **Confirmation label**: `✅ Goals updated` → `✅ Tasks updated` in `brief-poll` skill output. The data model still has goals (parents) and tasks (children) — but the user-facing artifact people see updated *is* the task list. Confirmation messages now reflect that. Same change cascades through:
+  - `skills/eod-brief/SKILL.md` — "New saves (not yet on the board)" → "New saves (not yet in tasks)"; dedup wording
+  - `README.md` — example confirmation in the "How your work is organized" round-trip paragraph
+- **Why this matters in practice:** The confirmation message used to be the *only* thing first-time users saw post-approval. "Board" was opaque (rejected in v0.6.2). "Goals updated" was technically correct but mismatched the unit of action — a single `apply 3` typically marks ONE task done, not a whole goal. "Tasks" matches what the user just did.
+
+### Migration from v0.7.0
+No action required. Next poll emits the new label automatically. Historical "Goals updated" / "Board updated" messages in your past brief threads stay as they were posted — the EOD brief's task-changes-today scanner already understands all three forms (Board / Goals / Tasks).
+
+---
+
 ## [v0.7.0] — 2026-04-27
 
 **Theme:** make MONITORING a first-class part of the daily decision-driving flow.
