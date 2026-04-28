@@ -184,13 +184,25 @@ Ask each in order, confirming what you heard back:
    
    For options 1–3, store the corresponding 24-hour value (`07:30`, `09:30`, `11:30`). For option 4, accept formats like `7:45am`, `08:15`, `10am` and convert to 24-hour.
 
-2. **EOD brief time**: "What time should your EOD brief fire? (default 3:30pm your local timezone)." Accept any format like `3:30pm`, `15:30`, `4pm`. Store as 24-hour.
+2. **EOD brief time**: compute a suggested default of `morning_time + 8 hours` so the EOD brief lands at the end of a normal work day, not right after lunch. Cap at 22:00 if the calculation would exceed it.
+
+   Ask:
+   > "When should your EOD brief fire? Suggested: **<computed_eod_time>** (8 hours after your <morning_time> morning brief — captures a full work day).
+   >
+   > 1. **<computed_eod_time>** — accept the 8-hour default
+   > 2. **Custom** — type a time
+   >
+   > Pick a number."
+
+   For option 1, store the computed time. For option 2, accept formats like `3:30pm`, `15:30`, `4pm` and convert to 24-hour. Reject any EOD time that's earlier than morning_time + 1 hour ("That's only 30 min after your morning brief — pick a later time so there's actually a workday between them.").
+
+   Example: morning=11:30 → suggested EOD=19:30. Morning=7:30 → suggested EOD=15:30. Morning=9:30 → suggested EOD=17:30.
 
 3. **Weekend runs**: "Skip weekends? (default yes — most people don't want weekend briefs.)" Yes → weekdays only. No → include Saturday + Sunday.
 
 ## Step 11 — Poll interval
 
-Ask: "How often should the throughout-the-day poll run? It checks thread replies, executes approved offers, and scans new signals. More often = more responsive + more tokens. Options:
+Ask: "How often should the throughout-the-day poll run? It checks thread replies, executes approved offers, and scans new signals — running between your morning brief at <morning_time> and your EOD brief at <eod_time>. More often = more responsive + more tokens. Options:
 
 - 30 min (~14 runs/day — highest responsiveness, highest cost)
 - 1 hour (~7 runs/day — **recommended**)
@@ -293,12 +305,26 @@ tasks_file: ~/.claude/daily-workflow-briefs/tasks.md
 Use `mcp__scheduled-tasks__create_scheduled_task` three times (confirm with the user before firing each). Use the user's chosen `morning_time`, `eod_time`, `poll_interval_minutes`, and `timezone`. If `run_on_weekends` is true, use `* * *` day-of-week instead of `1-5`.
 
 1. **morning-brief** — cron `<morning_min> <morning_hour> * * <dow>` in their timezone. Runs the `morning-brief` skill.
-2. **brief-poll** — cron based on poll interval:
-   - 30 min: `*/30 8-15 * * 1-5`
-   - 60 min: `0 8-15 * * 1-5`
-   - 90 min: `0,30 8-15 * * 1-5` (approximate)
-   - 120 min: `0 8,10,12,14 * * 1-5`
+
+2. **brief-poll** — cron computed from the user's chosen morning_time and eod_time. The poll should run BETWEEN the two briefs (no point polling before the morning brief lands, and the EOD-thread carryover handles after-EOD replies the next morning).
+
+   Compute window:
+   - `start_hour` = `morning_hour` if `morning_minute == 0` else `morning_hour + 1` (first whole hour AFTER morning brief)
+   - `end_hour` = `eod_hour - 1` if `eod_minute == 0` else `eod_hour` (last whole hour BEFORE EOD brief)
+   - If start_hour > end_hour (morning and EOD too close together), fall back to `morning_hour-eod_hour` and warn the user.
+
+   Cron string by interval:
+   - 30 min: `*/30 <start_hour>-<end_hour> * * <dow>`
+   - 60 min: `0 <start_hour>-<end_hour> * * <dow>`
+   - 90 min: `0,30 <start_hour>-<end_hour> * * <dow>` (approximate)
+   - 120 min: enumerate every other hour in `<start_hour>-<end_hour>`, e.g. `0 8,10,12,14 * * <dow>` if window is 8–15.
    - Custom: ask for the cron string.
+
+   Examples (hourly):
+   - morning=07:30, eod=15:30 → `0 8-15 * * 1-5`
+   - morning=11:30, eod=19:30 → `0 12-19 * * 1-5`
+   - morning=09:00, eod=17:00 → `0 9-16 * * 1-5`
+
 3. **eod-brief** — cron `<eod_min> <eod_hour> * * <dow>`. Runs the `eod-brief` skill.
 
 ## Step 17 — Offer a dry run

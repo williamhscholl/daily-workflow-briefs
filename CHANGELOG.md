@@ -10,6 +10,24 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.7.4] — 2026-04-28
+
+### Fixed (real bugs surfaced from setup-wizard cold-test)
+- **EOD default time is now derived from morning brief time, not hardcoded to 3:30pm.** Old behavior: every user got `default 3:30pm` regardless of when their morning brief fires. So a user setting morning=11:30am got an EOD suggestion of 3:30pm — only 4 hours later, missing the back half of their work day. New behavior: suggested EOD = `morning_time + 8 hours` (capped at 22:00). User can still type a custom override. The wizard also rejects EOD times within an hour of morning ("only 30 min between them — pick a later time").
+- **Poll cron window is now derived from morning + EOD times, not hardcoded to 8am–3pm.** Old behavior: every user's poll ran `8-15` regardless of their actual brief schedule. So a user with morning at 11:30am and EOD at 7:30pm got a poll window that ended *4 hours before their first brief landed* and never overlapped with their actual work day. New behavior: poll cron computes `start_hour` = first whole hour after morning, `end_hour` = last whole hour before EOD. Edge case (morning too close to EOD) falls back to inclusive window with a warning.
+
+### Why these slipped through
+Both defaults were copy-pasted from the original 7:30am/3:30pm reference user (the author). v0.1.0 shipped without anyone testing the wizard against alternate schedules — when Will cold-tested with a Brazil-timezone account using an 11:30am morning, both bugs surfaced immediately.
+
+### Migration from v0.7.3
+- **New users** see the corrected defaults from setup.
+- **Existing users** are unaffected — their cron is already written and live. To pick up the new defaults, re-run `/briefs:setup` (overwrites config) or edit `poll_interval_minutes` and the cron schedule via `mcp__scheduled-tasks` directly.
+
+### Where the fix lives
+[`commands/setup.md`](commands/setup.md) Step 10 (EOD time) and Step 16 (poll cron computation).
+
+---
+
 ## [v0.7.3] — 2026-04-28
 
 ### Changed
