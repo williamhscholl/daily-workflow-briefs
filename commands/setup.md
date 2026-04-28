@@ -62,15 +62,15 @@ Ask:
    Mix them however you want — order doesn't matter. Example:
    @Sam Lee @Riya Chen #engineering #leadership #product-feedback
 
-   Switch back to Claude Code and type `done` when finished.
+   Switch back to Claude Code and say `done` when finished.
    ```
 
    Save the message's `ts` — you'll use it as `thread_ts` to read replies.
 
 2. In Claude Code, prompt:
-   > "DM sent. Switch to Slack, reply in the thread with your @-mentions and #-mentions, then type `done` here when finished. (Or `skip` to switch to manual paste.)"
+   > "DM sent. Switch to Slack, reply in the thread with your @-mentions and #-mentions, then come back here and say `done`. (Or `skip` to switch to manual entry.)"
 
-3. When the user types `done`:
+3. When the user says `done`:
 
    - Call `slack_read_thread` on the DM message's `ts`. Read the user's most recent reply.
    - Parse the reply text:
@@ -101,9 +101,9 @@ Ask:
 
 Use this when the user picks (b), or if the Slack MCP is unavailable.
 
-**Channels** — Ask: "Paste channels one at a time as `CID name` — e.g. `C03FEGLDB6J #engineering`. Type `done` when finished. To get a channel ID: click the channel → channel name at top → 'Copy link' → grab the `C...` part of the URL."
+**Channels** — Ask: "Tell me each channel as `CID name` — one per message — e.g. `C03FEGLDB6J #engineering`. Say `done` when finished. To grab a channel ID: click the channel → channel name at top → 'Copy link' → take the `C...` part of the URL."
 
-**Team** — Ask: "Paste teammates one per line as `Name: UID` — e.g. `Sam Lee: U06D1LW0DV3`. Type `done` when finished. To get a user ID: click their profile → three dots → 'Copy member ID'."
+**Team** — Ask: "Tell me each teammate as `Name: UID` — one per message — e.g. `Sam Lee: U06D1LW0DV3`. Say `done` when finished. To grab a user ID: click their profile → three dots → 'Copy member ID'."
 
 Confirm counts when done ("Got 5 channels and 4 teammates.").
 
@@ -112,12 +112,12 @@ Confirm counts when done ("Got 5 channels and 4 teammates.").
 - **Deactivated users** parse as a normal `<@U...>` but `slack_read_user_profile` returns 404 — log "Heads up: <UID> looks deactivated, skipping" and don't include them in the team list.
 - **External-shared channels** still parse via `<#C...|name>`. Keep them.
 - **Bot users / apps** — if a `<@U...>` resolves to a bot or app, note it in the captured list but ask the user to confirm: "U07BOTXYZ is a bot — keep it for DM-scanning?" (Default no.)
-- **Timeout on Path (a)**: if 3 minutes pass with no reply in the DM thread AND no `done` typed in Claude, prompt: "Still there? Type `done` once your Slack reply is posted, or `skip` to switch to manual."
-- **Empty reply**: if the user types `done` but the DM thread has no reply text, ask them to reply in the thread first, then say `done` again.
+- **Timeout on Path (a)**: if 3 minutes pass with no reply in the DM thread AND no `done` from the user, prompt: "Still there? Say `done` once your Slack reply is posted, or `skip` to switch to manual."
+- **Empty reply**: if the user says `done` but the DM thread has no reply text, ask them to reply in the thread first, then say `done` again.
 
 ## Step 5 — VIPs
 
-Ask: "Any VIPs whose emails and messages always deserve attention? (Your boss, a key client, an executive who pings you often.) Paste as `Name: email@domain` — one per line. Type `done` when finished."
+Ask: "Any VIPs whose emails and messages always deserve attention? (Your boss, a key client, an executive who pings you often.) Tell me each as `Name: email@domain` — one per message. Say `done` when finished, or `skip` if none."
 
 Pre-fill common tiers from the role preset (Sales: CEO/CRO; Product: CEO/Head of Eng; etc.) — just ask the user to fill in the names/emails.
 
@@ -150,7 +150,7 @@ Ask: "What do you use to transcribe and summarize your meetings?
 7. **None** — I don't use a transcriber
 8. **Custom** — different tool; I'll tell you how to reach it
 
-Type a number (default 1)."
+Pick a number (default 1)."
 
 For each tool with an official MCP (Zoom, Granola, Otter, Fireflies, Fathom), prefer the MCP path. Ask:
 
@@ -195,7 +195,7 @@ Ask: "Any other tools you want briefs to scan? Examples:
 - Tools with a Claude Code MCP — Salesforce, Intercom, Zendesk, Linear, GitHub, Notion, Asana
 - Tools that email you summaries — Granola (meeting transcriber), Otter, Fireflies, Fathom, Loom
 
-Type `done` when finished, or `skip` if none."
+Just name a tool to add it (one at a time). Say `done` when finished, or `skip` if none."
 
 For each one the user names, ask which path applies:
 
@@ -243,7 +243,7 @@ Ask each in order, confirming what you heard back:
    > 1. **7:30am** — early bird
    > 2. **9:30am** — morning person
    > 3. **11:30am** — sleeping in
-   > 4. **Custom** — type a time
+   > 4. **Custom** — tell me a time
    >
    > Pick a number (no default — ask the user to choose so they don't end up with someone else's morning routine)."
    
@@ -255,7 +255,7 @@ Ask each in order, confirming what you heard back:
    > "When should your EOD brief fire? Suggested: **<computed_eod_time>** (8 hours after your <morning_time> morning brief — captures a full work day).
    >
    > 1. **<computed_eod_time>** — accept the 8-hour default
-   > 2. **Custom** — type a time
+   > 2. **Custom** — tell me a time
    >
    > Pick a number."
 
@@ -273,7 +273,7 @@ Ask: "How often should the throughout-the-day poll run? It checks thread replies
 - 1 hour (~7 runs/day — **recommended**)
 - 90 min (~5 runs/day)
 - 2 hours (~4 runs/day)
-- Custom (type minutes as a number)
+- Custom (just tell me how many minutes)
 
 Rough token cost per day: 30min ≈ 40–60k tokens, 1hr ≈ 20–30k, 90min ≈ 15k, 2hr ≈ 12k. On Sonnet that's roughly $0.60 / $0.30 / $0.20 / $0.15 per day respectively (varies with activity)."
 
@@ -290,7 +290,7 @@ Store as `work_offer_preview: summary` or `work_offer_preview: full`.
 
 ## Step 12 — Tasks file location
 
-Ask: "Where should I keep your tasks.md? (default `~/.claude/daily-workflow-briefs/tasks.md`, or paste your own path. To skip task tracking entirely, say `none`.)"
+Ask: "Where should I keep your tasks.md? Default is `~/.claude/daily-workflow-briefs/tasks.md` — say `default` to accept it, give me a custom path to override, or say `none` to skip task tracking entirely."
 
 If the default doesn't exist yet, tell them: "I'll create it from a starter template so the morning brief has something to read." Copy `templates/tasks.md.starter` from the plugin dir to their chosen path.
 
@@ -412,8 +412,10 @@ Tell them: "Edit `~/.claude/daily-workflow-briefs/config.md` directly any time. 
 
 ## Conversational rules
 
+- **You're in chat, not a terminal.** Never tell the user to "hit enter," "press a key," or otherwise act like a CLI. Use chat-natural verbs: `say` (for command words like `done` / `skip` / `default`), `tell me` (for free-form input), `pick a number` (for menu choices). When a step has a default, say "say `default` to accept it" or just describe what'll happen if they pick that option — never assume an enter-to-accept mechanism.
 - ONE question at a time. Never dump a wall of fields.
 - Always confirm what you heard back before moving on.
 - Catch malformed input (e.g. `@user` instead of `U...`) with a gentle correction and example.
 - Let the user say `skip` or `later` for any optional field — use sensible defaults.
+- Accept a wide range of "yes / accept / sure / that's fine" affirmatives without being picky about exact wording. Same for "no / nope / skip / later" — recognize natural speech.
 - At the end, show them the full config file content so they can sanity-check before you write it.

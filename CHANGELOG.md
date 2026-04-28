@@ -10,6 +10,32 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.7.6] — 2026-04-28
+
+### Fixed
+- **Setup wizard prompts no longer read like a CLI.** The wizard runs in Claude Code chat — there's no "hit enter to accept default" mechanism, no terminal where the user types into a prompt. But the wizard's spec was full of terminal-isms (`Type \`done\``, `Type a number`, `Paste channels one at a time`, `Hit enter to accept`) which made the conversation feel mechanical and confused users about how to actually input things.
+- Added a **conversational meta-rule** at the top of "Conversational rules" calling this out explicitly: chat-natural verbs only (`say` / `tell me` / `pick`), never `hit enter` / `press` / CLI-isms. When a default exists, the user says `default` (or any natural affirmative) to accept it — never an enter-to-accept assumption.
+
+### Specific phrasing changes in setup.md
+| Step | Before | After |
+|---|---|---|
+| 4 (channels) | "Paste channels one at a time as `CID name`. Type `done`" | "Tell me each channel as `CID name`. Say `done`" |
+| 4 (team) | "Paste teammates one per line as `Name: UID`. Type `done`" | "Tell me each teammate as `Name: UID`. Say `done`" |
+| 5 (VIPs) | "Paste as `Name: email@domain` — one per line. Type `done`" | "Tell me each as `Name: email@domain`. Say `done`, or `skip` if none." |
+| 7 (transcriber) | "Type a number (default 1)" | "Pick a number (default 1)" |
+| 8 (additional) | "Type `done` when finished, or `skip` if none" | "Just name a tool to add it (one at a time). Say `done` when finished, or `skip` if none." |
+| 9 (brief times) | "**Custom** — type a time" | "**Custom** — tell me a time" |
+| 10 (poll) | "Custom (type minutes as a number)" | "Custom (just tell me how many minutes)" |
+| 12 (tasks file) | "default `<path>`, or paste your own path. To skip task tracking entirely, say `none`." | "Default is `<path>` — say `default` to accept it, give me a custom path to override, or say `none` to skip task tracking entirely." |
+
+### Why
+A user cold-testing the wizard hit "Hit enter to accept the default" as the prompt for the tasks file step (the wizard had improvised that phrasing because the spec didn't say how to accept). They had to guess what to type. Same friction across the wizard — users were typing the wrong thing because the wizard's instructions assumed a terminal context.
+
+### Migration from v0.7.5
+No action required — wording-only changes in the wizard. Users running setup after this version will see chat-natural prompts.
+
+---
+
 ## [v0.7.5] — 2026-04-28
 
 ### Added
