@@ -10,6 +10,38 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.7.3] — 2026-04-28
+
+### Changed
+- **README rewritten top-to-bottom for tighter, PM-style structure.** Reduced from 414 lines to 312 (~25%). Same content, less meandering.
+
+### New top-of-README structure
+1. **What it does** — two value-props lead, no preamble: (1) organizes and prioritizes your work from Slack/email/calendar/meeting notes/Jira, (2) updates work automatically throughout the day. Tagline: "No todo app to learn. No manually updating anything. No forgetting a new due date or a decision made in a meeting."
+2. **What makes Briefs different** — two named differentiators with explicit headings:
+   - *Briefs offers to do work for you* (the approval-loop pitch, surfaced upfront instead of buried halfway down)
+   - *Work is organized into todo and monitoring* (the monitoring distinction, surfaced upfront instead of in a sub-section)
+3. **How your work is organized** — collapsed three previous sub-sections (Goals, Tasks, MONITORING) into one paragraph and one example codeblock. Schema is still complete; verbosity is gone.
+4. **How the pieces fit together** — diagram unchanged from v0.7.2.
+5. **Quick start, Commands, Allowlist, Roles, Updating, Privacy, FAQ** — all kept, all tightened.
+
+### What was cut
+- Verbose explainer paragraphs that re-stated what the bullets and tables already said.
+- Redundant "approval loop" section (now subsumed into the up-front differentiator + a leaner allowlist section).
+- Step-by-step setup-wizard walkthrough (the wizard already prompts for these — duplicating the list in README adds no value).
+- Privacy section consolidated from 4 sub-sections to 1 bullet list.
+- Updating section consolidated from 3 sub-sections to 1 flow.
+
+### What was kept verbatim
+- The architecture diagram (added in v0.7.2)
+- The `tasks.md` schema example
+- The Commands table and the Ask-about-your-tasks query table
+- The allowlist (✅ / ❌ table of permitted actions)
+
+### Migration from v0.7.2
+No action required — README-only docs change.
+
+---
+
 ## [v0.7.2] — 2026-04-28
 
 ### Added

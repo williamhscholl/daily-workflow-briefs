@@ -2,80 +2,56 @@
 
 **A self-maintaining task list, delivered through Slack.**
 
-Briefs does two things at once:
+## What it does
 
-1. **Organizes your work into goals and tasks.** A *goal* is a project or objective you're driving; under each goal sit tasks with a priority, owner, due date, and notes. All stored in plain markdown (`tasks.md`) you can read, edit, or grep any time. No new app to learn, no proprietary database.
-2. **Keeps that list current automatically.** Three briefs post to your Slack self-DM throughout the day, pulling signals from your calendar, Slack, email, Zoom transcripts, and Jira to surface what changed, what's overdue, and what new tasks belong. You approve changes from your phone — no app to open.
+1. **Organizes and prioritizes your work.** Pulls signals from Slack, email, calendar, meeting notes, and Jira to create goals and tasks — with owners, priority, due dates, and notes.
+2. **Updates your work automatically.** Checks throughout the day for new signals (Slack decisions, meeting action items, email deadlines) and updates tasks accordingly.
 
-The result is a list that stays accurate without you maintaining it. You wake up, your goals are already up to date.
+No todo app to learn. No manually updating anything. No forgetting a new due date or a decision made in a meeting.
 
-The three briefs:
+Three skills run on a schedule:
 
-- 🌤 **Morning brief** — today's meetings, overdue work, meeting next-steps, top-3 decisions
-- 🔄 **Throughout-the-day poll** — processes your thread replies, applies approved work, surfaces new signals
-- 🌇 **EOD brief** — meetings attended, tomorrow's top-3 focus (or Monday's, with a weekend send-off if it's Friday)
+- 🌤 **Morning** — what to focus on today + top 3 decisions
+- 🌇 **End of day** — recap of today + what's up next for tomorrow
+- 🔄 **Periodic checker** — scans Slack and other signals throughout the day to update tasks
 
-You pick the exact times and timezone during setup (defaults: 7:30am / 3:30pm weekdays, poll every hour).
+You pick the times during setup. Defaults: 7:30am / 3:30pm weekdays, checker every hour.
 
-Each morning brief and poll ends with a `🤝 Work I can do for you` section — concrete actions Claude can take on your behalf. You approve with `apply 1` / `skip 2` / `edit 1: …` and the plugin executes on the next poll (or instantly if you trigger one manually).
+---
+
+## What makes Briefs different
+
+### Briefs offers to do work for you
+
+Briefs doesn't just tell you what's on your plate — it offers to handle it. Each morning brief and periodic check ends with concrete actions Claude can take: edit a Confluence page, comment on a Jira ticket, draft a Slack reply, mark a task done. Approve from your phone with `apply 1` / `skip 2` / `edit 1: …`. Nothing happens without your explicit approval.
+
+### Work is organized into todo and monitoring
+
+Briefs distinguishes between what *you owe* and what's *owed to you*. Action items are tasks. Things you're watching — direct reports' deliveries, customer escalations someone else is fixing, items waiting on confirmation — show up as monitoring items, with their owners and due dates tracked separately. Ask "what should I prioritize today?" and you get both: 🎯 your work + 👁 what others owe you today.
 
 ---
 
 ## How your work is organized
 
-Two levels: **goals** and **tasks**.
-
-A **goal** is a project or objective you're driving — "Q2 Roadmap", "Hire QA Lead", "Roll out feature X". Goals carry their own metadata (owner, priority, target date) plus context: why the goal exists, links to relevant Confluence/Jira/Slack threads, the decision history that brought you here.
-
-A **task** is a discrete to-do under a goal — with a priority (Critical / High / Medium / Low), an owner (you or a teammate), an optional due date, and a note. Open or completed.
-
-Concrete example from `tasks.md`:
+Two levels: **goals** (projects/objectives like "Q2 Roadmap" or "Hire QA Lead") and **tasks** (the discrete to-dos under them). Every task has a priority, owner, optional due date, and note. The third dimension — **monitoring** — applies at either level: a `## MONITORING:` goal or a `[MONITORING]` task tag flags work where someone else is driving and you're keeping tabs. All stored as plain markdown in `tasks.md`.
 
 ```markdown
 ## GOAL: Q2 Product Roadmap
 **Owner:** You | **Priority:** Critical | **Due:** 2026-04-21
-**Confluence:** https://your-wiki/q2-roadmap
-**Context:** Q2 prioritization completed Apr 14. Direction confirmed on calendar build...
+- [ ] [CRITICAL]   Review meeting transcript — clean up Q2 doc | Owner: You
+- [ ] [HIGH]       Meet with tech leads on estimations | Owner: You + John
+- [ ] [MONITORING] Alex: deliver ENG-122 fix | Owner: Alex
 
-### Tasks
-- [ ] [CRITICAL] Review meeting transcript — clean up Q2 doc | Owner: You
-- [ ] [HIGH]     Meet with tech leads on effort estimations | Owner: You + John | Due: 2026-04-20
-- [ ] [MEDIUM]   Review SOC 2 policies pending approval | Owner: You
-- [x]            Synthesize calendar survey responses
-```
-
-### MONITORING — what you watch vs. what you owe
-
-Not all your work is yours to drive. Some of it is yours to *watch*.
-
-Have direct reports? Collaborate with a team you pass work between? Waiting on confirmation, approval, or a delivery from someone else? Mark it as **MONITORING** so you can tell at a glance what you owe vs. what you're tracking.
-
-It applies at both levels:
-
-- **A whole goal can be MONITORING** — use `## MONITORING:` instead of `## GOAL:` when someone else is driving the project but you need to keep tabs (a vendor evaluation owned by a direct report, a customer escalation a teammate is fixing, an external partnership in motion).
-- **An individual task can be `[MONITORING]`** — use this in place of `[CRITICAL]` / `[HIGH]` / `[MEDIUM]` / `[LOW]` when you're watching for movement rather than doing the work yourself ("Alex: deliver ENG-122 fix" — assigned to Alex, you check in, you don't ship it).
-
-```markdown
 ## MONITORING: Session Replay Evaluation
 **Owner:** Helen | **Priority:** High
-- [ ] [HIGH]       Helen: comparison slides for review | Owner: Helen | Due: 2026-04-17
-- [ ] [MONITORING] Helen: document eval notes in Confluence | Owner: Helen
-
-## GOAL: Q2 Product Roadmap
-**Owner:** You | **Priority:** Critical
-- [ ] [CRITICAL]   Review meeting transcript — clean up Q2 doc | Owner: You
-- [ ] [MONITORING] Alex: deliver ENG-122 fix | Owner: Alex
+- [ ] [HIGH]       Helen: comparison slides for review | Owner: Helen
 ```
 
-In practice, `[MONITORING]` tasks don't compete with your own work in priority queries — when you ask "what should I prioritize today?", they drop out (they aren't Critical/High/Medium/Low). They surface when you ask "what's [name] working on?", scan a specific goal, or when the underlying signal moves (a Slack mention, a Jira status change, a comment) — so you spend attention on action items, not status-watching.
+> Don't want the task layer? Set `tasks_file: none` and the briefs run as pure summarizers.
 
 ---
 
-That's the whole data model. Plain markdown, version-controllable, editable in any text editor or in Claude Code. The briefs read and write this file directly — and so can you. When you `apply 3` from Slack, the poll edits `tasks.md` and posts a `✅ Tasks updated` confirmation in-thread. When you ask Claude "what's overdue?", it reads the same file.
-
-> Don't want the task layer? Set `tasks_file: none` during setup and the briefs run as pure summarizers — no goal/task tracking, just signal aggregation.
-
-### How the pieces fit together
+## How the pieces fit together
 
 ```
                   ┌────────────────────────────────────┐
@@ -111,172 +87,121 @@ That's the whole data model. Plain markdown, version-controllable, editable in a
 
 The four skills share `config.md` (your settings) and `tasks.md` (your work) as foundation files.
 
-**Briefs** push state out to you — morning agenda, end-of-day recap, tomorrow's top 3 — and post to your Slack self-DM on a fixed schedule. They never edit `tasks.md` themselves; they only present it.
+**Briefs** push state out to you — morning agenda, end-of-day recap, tomorrow's top 3 — on a fixed schedule. They never edit `tasks.md`; they only present it.
 
 **Sync** is the inverse direction. The poll reads your thread replies and converts them into edits on `tasks.md`. It picks up both **explicit approvals** (`apply 1`, `skip 2`, `edit 1: …`) and **natural-language updates** (`mark X done`, `add a task to <goal>`, `move Y to Friday`). Posts a `✅ Tasks updated` confirmation in-thread.
 
 **On-demand** is `tasks` — fires when you ask in Claude Code chat. Reads `tasks.md` directly, no Slack involvement.
 
-Slash commands (`/briefs:setup`, `/briefs:run morning|eod|poll`, `/briefs:help`, `/briefs:config`, `/briefs:monitoring`) are manual entry points that invoke any of the above directly — useful for testing, ad-hoc runs, or as alternatives to natural language.
+Slash commands (`/briefs:setup`, `/briefs:run`, `/briefs:help`, `/briefs:config`, `/briefs:monitoring`) are manual entry points — useful for testing, ad-hoc runs, or alternatives to natural language.
 
 ---
 
 ## Quick start
 
-Three steps. Allow 10 minutes. You need a terminal open for step 1; everything else happens inside Claude Code.
+Three steps. ~10 minutes.
 
-### Step 1 — Install Claude Code, then the plugin
+### 1. Install Claude Code, then the plugin
 
-**If you don't have Claude Code installed yet:**
+If you don't have Claude Code yet:
 
-Mac / Linux (open Terminal):
 ```bash
+# Mac / Linux (Terminal)
 curl -fsSL https://claude.ai/install.sh | bash
-```
 
-Windows (open **PowerShell**, not Git Bash):
-```powershell
+# Windows (PowerShell, NOT Git Bash)
 irm https://claude.ai/install.ps1 | iex
 ```
 
-> ⚠ Claude Code (the CLI) is a **separate product from the Claude Desktop chat app**. Having the chat app installed is not enough.
+> ⚠ Claude Code is a separate product from the Claude Desktop chat app. Restart your terminal after install, then verify with `claude --version`.
 
-After install, close and reopen your terminal. Verify:
-```bash
-claude --version
-```
-You should see a version number (e.g. `2.1.119`). If you see `command not found`, follow the path-fix hint the installer printed (usually `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc`).
+Install the plugin:
 
-**Install the plugin** (one line, from any terminal):
 ```bash
 claude plugin marketplace add williamhscholl/daily-workflow-briefs && claude plugin install briefs@briefs
 ```
 
-On Windows PowerShell, run as two separate lines (`&&` requires PowerShell 7+):
-```powershell
-claude plugin marketplace add williamhscholl/daily-workflow-briefs
-claude plugin install briefs@briefs
-```
+(On PowerShell <7, run as two separate lines — `&&` requires PowerShell 7+.)
 
-### Step 2 — Connect your MCPs
+### 2. Connect MCPs
 
-The briefs read from these tools via Claude Code MCPs:
+Open the Claude Code app → Settings → MCP Servers.
 
-**Required:** Slack, Google Calendar, Gmail
-**Meeting transcriber** (you pick one during setup): Zoom (default — uses Zoom MCP), or Granola / Otter / Fireflies / Fathom / Loom (uses Gmail to read their emailed recaps), or None
-**Optional:** Atlassian (Jira + Confluence), HubSpot
-**Anything else:** Salesforce, Intercom, Zendesk, Linear, GitHub, Notion, Asana — any MCP you can connect to Claude Code can be added as a read-only signal source during setup. Or, for tools that don't have an MCP but email you summaries, the plugin can watch Gmail for those emails instead. See [docs/integrations.md](docs/integrations.md#additional-integrations-any-tool).
+- **Required**: Slack, Google Calendar, Gmail
+- **Pick a meeting transcriber**: Zoom (default) / Granola / Otter / Fireflies / Fathom / Loom / None
+- **Optional**: Atlassian (Jira + Confluence), HubSpot
+- **Or any MCP**: Salesforce, Intercom, Zendesk, Linear, GitHub, Notion, Asana — read-only signal source
 
-If you don't have them connected already, open the **Claude Code app** (the desktop app — download from [claude.com](https://claude.com) if you don't have it) and connect each via Settings → MCP Servers. See [docs/integrations.md](docs/integrations.md) for details.
+See [docs/integrations.md](docs/integrations.md) for details.
 
-### Step 3 — Run setup
+### 3. Run setup
 
-Open the Claude Code desktop app. In any chat, type:
+In Claude Code chat:
 
 ```
 /briefs:setup
 ```
 
-Claude walks you through configuration in chat:
-- Pick a role preset (Sales / CS / Product / Engineering / Custom)
-- Enter your Slack user ID + self-DM channel (help text tells you where to find them)
-- Paste your team members' Slack IDs
-- List your VIPs (emails)
-- **Pick your meeting transcriber** (Zoom default; or Granola / Otter / Fireflies / Fathom / Loom; or None)
-- **List any other tools you want briefs to scan** (Salesforce, Intercom, Zendesk, etc.)
-- Pick your morning + EOD times and timezone
-- Pick a poll interval
-- Pick work-offer preview detail (summary vs full)
-- Confirm
-
-You can also type `claude` in a terminal to start a CLI session and run the same command. Either environment works.
-
-### Done
-
-Briefs start firing on your schedule. First one lands the next weekday at your chosen morning time.
+The wizard walks you through identity, channels, team, VIPs, transcriber, schedule, and preferences. Briefs start firing on your schedule — first one lands the next weekday morning.
 
 ---
 
-## Commands reference
+## Commands
 
-Every plugin command is namespaced under `briefs:`. Slash commands and plain English both work — use whichever feels natural.
+Slash commands are namespaced `briefs:`. Plain English works too — both invoke the same skills.
 
-| Command | Plain language equivalent | What it does |
-|---------|--------------------------|--------------|
-| `/briefs:setup` | "set up my briefs" | Interactive setup wizard. Run first. Also use to re-configure. |
-| `/briefs:run morning` | "run my morning brief" | Run the morning brief now (useful for testing) |
-| `/briefs:run eod` | "run my EOD brief" | Run the EOD brief now |
-| `/briefs:run poll` | "run my poll now" / "process my Slack replies" | Run the poll now — **use this after approving offers in Slack** to apply them instantly instead of waiting for the scheduled poll |
-| `/briefs:help` | "what's in my brief config?" / "how do I use this?" | Show your current config + scheduled times + recent run stats + usage tips |
-| `/briefs:config` | "change my morning to 8am" / "add Sid to my team" | Edit a single config field via chat |
-| `/briefs:monitoring` | "what am I waiting on?" / "what does Sid owe me?" | Show what's owed to you — tasks where the owner isn't you, grouped by owner. Optional arg: a name to filter, or `today` / `this week` to narrow. |
+| Command | Plain language | What it does |
+|---|---|---|
+| `/briefs:setup` | "set up my briefs" | Interactive setup wizard |
+| `/briefs:run morning` | "run my morning brief" | Trigger morning brief now |
+| `/briefs:run eod` | "run my EOD brief" | Trigger EOD brief now |
+| `/briefs:run poll` | "process my Slack replies" | Process pending approvals immediately |
+| `/briefs:help` | "what's in my brief config?" | Show config + schedule + recent runs |
+| `/briefs:config` | "change my morning to 8am" | Edit a single config field via chat |
+| `/briefs:monitoring` | "what does Sid owe me?" | Show what's owed to you, grouped by owner |
 
-You can also make config changes without a slash command at all:
-- "change my poll interval to 90 minutes"
-- "add Zendesk as an integration: tickets I'm watching"
-- "switch my meeting transcriber to Granola"
-- "add Riya to my team"
+Config edits work without slash commands too: "change my poll interval to 90 minutes", "add Riya to my team", "switch transcriber to Granola".
 
-### Ask about your tasks (any time, in Claude Code)
+### Ask about your tasks
 
-The plugin includes a `tasks` skill that auto-fires when you ask about your work. No slash command — just type the question:
+The `tasks` skill auto-fires when you ask about your work. Just type the question:
 
-| You say | What you get |
-|---------|-------------|
-| "What should I prioritize today?" | **Two parallel sections:** 🎯 your work today + 👁 owed to you / watching today |
-| "What's overdue?" | 🔴 yours overdue + ⏳ owed to you (overdue), grouped by owner |
-| "What do I need to do next?" | Next 3 by priority |
-| "What's on my plate this week?" | Tasks due in the next 7 days, your work + watching items |
-| "What did I get done this week?" | Completed tasks since Monday |
-| "Show me everything for [goal name]" | All open + completed tasks for that goal |
-| "How's my workload?" | Snapshot: 🎯 your work counts + 👁 watching counts (top owners, overdue) |
-| "What's [name] working on?" | Tasks filtered by owner — great for 1:1 prep |
-| "What am I waiting on?" / "What am I watching?" | All yours-to-watch items, grouped by owner, overdue first |
+| You ask | What you get |
+|---|---|
+| "What should I prioritize today?" | 🎯 your work today + 👁 owed to you today |
+| "What's overdue?" | 🔴 yours overdue + ⏳ others' overdue |
+| "What am I waiting on?" | All watching items, grouped by owner |
 | "What does [name] owe me?" | Watching items filtered to that owner |
-| "What is owed to me today?" / "...this week?" | Watching items narrowed by time window |
-| "Find the task about [topic]" | Full-text search across tasks + notes |
+| "What's on my plate this week?" | Tasks due in next 7 days |
+| "What did I get done this week?" | Completed tasks since Monday |
+| "Show me everything for [goal]" | All tasks in that goal |
+| "How's my workload?" | Counts + top owners + overdue snapshot |
+| "Find the task about [topic]" | Full-text search |
 
-**About monitoring** — see [How your work is organized → MONITORING](#monitoring--what-you-watch-vs-what-you-owe) for the data model. Tasks where the owner isn't you and either the parent goal is `## MONITORING:` or the priority tag is `[MONITORING]` show up in the watching queries above. The owner check trumps the goal-level marker — a `## MONITORING:` goal can contain a task you own personally, and that task goes in your action list, not your watching list.
-
-You can also modify tasks in plain English: "mark X done", "add a task to [goal]: …", "move X to Friday", "bump Y to critical". Same patterns the brief poll uses for Slack thread replies — they work in Claude Code too.
+Modifications work the same way: "mark X done", "add a task to <goal>: …", "move X to Friday", "bump Y to critical".
 
 ---
 
-## The approval loop (the thing that makes this different)
+## What Briefs can do on your behalf
 
-The morning brief and each throughout-the-day poll end with a thread reply like this:
+When you `apply N` an offer, Briefs can take exactly these actions:
 
-```
-🤝 Work I can do for you — reply here to approve
-
-1. Update Confluence "Product Strategy" — append decision context from yesterday's call
-2. Add comment to CLA-718 — status-check note to Sid
-3. Draft Slack reply to your CEO on forecast question
-
-Reply with apply 1 / skip 2 / show 3 (to preview) / edit 1: <new text>.
-I'll pick up your reply on the next poll.
-⚡ Need it sooner? Reply, then run /briefs:run poll in Claude Code.
-```
-
-You reply in Slack (on your phone, from bed, wherever). The next poll reads your reply and executes approved items. If you want it to happen *right now*, open Claude Code and run `/briefs:run poll` — the poll runs immediately and processes your reply within seconds.
-
-> Note: the EOD brief does NOT post work offers. The poll only runs 8am–4pm, so any EOD offer would sit unactioned overnight. Action-required items from afternoon meetings show up in next morning's offers instead.
-
-**The allowlist** — actions this plugin can take on your behalf:
 - ✅ Edit / append to a Confluence page (with diff preview)
 - ✅ Add a comment to a Jira ticket (with preview)
-- ✅ Draft a Slack reply — drafted only, never auto-sent
-- ✅ Add / update / mark-done a task in your tasks.md
+- ✅ Draft a Slack reply — *drafted only, never auto-sent*
+- ✅ Add / update / mark-done a task in your `tasks.md`
 - ✅ Add a read-only note to a HubSpot deal
 - ❌ Send email
 - ❌ Change Jira status / assignee / priority
-- ❌ Change HubSpot deal stage / amount / owner
-- ❌ Anything destructive — delete, close, archive
-- ❌ Write actions on additional integrations (Salesforce, Intercom, etc.) — read-only in v1
+- ❌ Change HubSpot deal stage / amount / owner / close date
+- ❌ Anything destructive (delete, close, archive)
+- ❌ Write actions on additional integrations (read-only in v1)
 
-Every execution shows the exact text/diff that was applied, so you can catch mistakes immediately.
+Every execution shows the exact text/diff applied, in-thread, so you can catch mistakes immediately.
 
-**Preview detail:** during setup you pick `summary` (one-line offers, type `show 1` in Slack to expand the full text) or `full` (full preview inline in every offer message). Change later with `/briefs:config switch preview to full`.
+**Preview detail:** during setup, pick `summary` (one-line offers; type `show 1` to expand) or `full` (full preview inline). Change later via `/briefs:config switch preview to full`.
+
+> The EOD brief does NOT post offers — the periodic checker runs 8am–4pm, so any EOD offer would sit unactioned overnight. Action items from afternoon meetings surface in next morning's offers.
 
 ---
 
@@ -294,72 +219,46 @@ Each role file documents what signals get prioritized, typical work offers, and 
 
 ---
 
-## Updating the plugin
+## Updating
 
-**Updates are 100% manual — nothing auto-updates.** You stay on whatever version you installed until you explicitly run an update command. If you never want to update, you never have to.
-
-### Preview what's in a new version BEFORE updating
-
-1. Open the [CHANGELOG.md](CHANGELOG.md) — every version's changes are documented there, newest first.
-2. Or compare your installed version to `main` directly:
-   ```
-   https://github.com/williamhscholl/daily-workflow-briefs/compare/v0.2.0...main
-   ```
-   Replace `v0.2.0` with whatever version you currently have. GitHub will show every line that changed.
-3. Or browse the commits at [github.com/williamhscholl/daily-workflow-briefs/commits/main](https://github.com/williamhscholl/daily-workflow-briefs/commits/main). Each commit message describes the change.
-
-If you don't like what you see, just don't update. Your installed version keeps working forever.
-
-### Update commands
-
-When you decide to update:
+Updates are manual — nothing auto-updates. Run when you want to:
 
 ```bash
 claude plugin marketplace update briefs
 claude plugin update briefs@briefs
 ```
 
-Your config and tasks.md are preserved — only the plugin logic refreshes. After updating, check [CHANGELOG.md](CHANGELOG.md) for any migration steps the new version requires.
+Your config and `tasks.md` are preserved.
 
-### If a new version breaks something for you
+**Before updating:** read [CHANGELOG.md](CHANGELOG.md) (newest first), or compare your version to main:
+```
+https://github.com/williamhscholl/daily-workflow-briefs/compare/v0.6.0...main
+```
 
-Roll back by reinstalling the previous tagged release:
+If a new version breaks something, roll back by reinstalling the previous tag:
+
 ```bash
 claude plugin uninstall briefs
-claude plugin marketplace remove briefs
-git clone --branch v0.2.0 https://github.com/williamhscholl/daily-workflow-briefs ~/briefs-v0.2.0
-claude plugin marketplace add ~/briefs-v0.2.0
+git clone --branch v0.6.0 https://github.com/williamhscholl/daily-workflow-briefs ~/briefs-prev
+claude plugin marketplace add ~/briefs-prev
 claude plugin install briefs@briefs
 ```
 
-(Replace `v0.2.0` with whichever earlier version you want.) Then file an issue at [github.com/williamhscholl/daily-workflow-briefs/issues](https://github.com/williamhscholl/daily-workflow-briefs/issues) describing what broke.
+Then file an issue at [github.com/williamhscholl/daily-workflow-briefs/issues](https://github.com/williamhscholl/daily-workflow-briefs/issues).
 
 ---
 
 ## Privacy & data
 
-**Everything you care about stays on your machine.** This plugin doesn't phone home, doesn't send telemetry, doesn't log to any external service. The plugin author (and anyone else) cannot see your data.
+**Everything you care about stays on your machine.** No telemetry, no phone-home, no external logging. The plugin author cannot see your data.
 
-### What stays local
-- **Your config**: `~/.claude/daily-workflow-briefs/config.md` — Slack IDs, team list, VIP emails, integration settings.
-- **Your tasks.md**: same directory. Never leaves your machine unless you put it on a synced drive yourself.
-- **The offers ledger and poll log**: same directory. Internal bookkeeping only.
+- **Config, tasks.md, offers ledger, poll log**: all in `~/.claude/daily-workflow-briefs/`.
+- **Slack / Gmail / Calendar / Zoom / Jira / HubSpot**: flow through *your* OAuth tokens via *your* MCP connections — never through the plugin author.
+- **Briefs post only to your Slack self-DM** (a DM with yourself; no one else sees it).
+- **Anthropic API**: signals get sent for Claude to reason over — same data path as any Claude Code session. See [Anthropic's privacy policy](https://www.anthropic.com/legal/privacy).
+- **Open-source trust**: like any GitHub plugin, `update` pulls code from this repo. Updates are manual (read the changelog first); the plugin is text-only markdown (auditable by skimming); pin to a tag if you don't want changes.
 
-### What flows through your own connections
-- **Slack content** flows through your own Slack OAuth token via the Slack MCP you connected to Claude Code. The plugin author has no access to it.
-- **Gmail / Google Calendar / Zoom / Jira / HubSpot / additional integrations**: same — your own OAuth tokens, your own MCP connections, your own data.
-- **Briefs post to your Slack self-DM only** (a DM with yourself — no one else can see it).
-
-### What goes to Anthropic's API
-This is a Claude Code plugin, so when a brief runs, the signals it gathers (your Slack messages, Gmail threads, Zoom summaries, etc.) get sent to Anthropic's API for Claude to reason over. That's how Claude Code works — the same data path applies to any Claude Code session you've ever run. [Anthropic's data-handling policy](https://www.anthropic.com/legal/privacy) covers this. The plugin doesn't send anything *additional* to Anthropic beyond what Claude Code itself would send.
-
-### Open-source trust model
-Like any open-source plugin, when you install or update, you pull and execute code from this GitHub repo. If the author (or someone with write access) ever pushed something malicious, an `update` command would propagate it to your machine. This is the standard trust model for `npm`, `pip`, GitHub Actions, etc. Mitigations:
-- Updates are manual (see above) — you choose when, after reading the changelog.
-- The plugin code is text-only (markdown skill specs and a JSON manifest) — no compiled binaries, no shell scripts. Easy to audit by skimming the files.
-- You can pin to a tagged version and never update if you want.
-
-If you have specific compliance requirements (SOC 2, HIPAA, GDPR data residency rules), this plugin doesn't add anything beyond what Claude Code itself does — talk to your security team about whether Claude Code is approved in your environment first.
+For SOC 2 / HIPAA / GDPR compliance: this plugin adds nothing beyond what Claude Code already does — talk to your security team about Claude Code first.
 
 ---
 
@@ -374,40 +273,39 @@ If you have specific compliance requirements (SOC 2, HIPAA, GDPR data residency 
 
 ## Uninstall
 
-From any terminal:
 ```bash
 claude plugin uninstall briefs
 ```
 
-The three scheduled cron tasks will stop firing. Config and tasks.md stay in `~/.claude/daily-workflow-briefs/` — delete that directory manually if you want a clean wipe.
+The three scheduled cron tasks stop firing. Config and `tasks.md` stay in `~/.claude/daily-workflow-briefs/` — delete that directory manually for a clean wipe.
 
 ---
 
 ## FAQ
 
-**Does this send email / DMs automatically?**
-No. The plugin never sends anything outside your self-DM. Slack replies are drafted only — you copy/paste to send.
+**Does this send email / DMs automatically?**  
+No. Briefs only post to your self-DM. Slack replies are drafted only — you copy/paste.
 
-**What if I approve an offer by mistake?**
-Every execution is logged with a timestamp and the exact text applied, and the confirmation shows up in-thread so you see it immediately. To undo: revert manually (edit the Confluence page back, delete the Jira comment). The plugin doesn't keep a "revert" command in v1.
+**What if I approve an offer by mistake?**  
+Every execution is logged with a timestamp and the exact text applied. To undo: revert manually (edit the Confluence page, delete the Jira comment). No "revert" command in v1.
 
-**Can I use this if I don't want the task-tracking part?**
-Yes. In `/briefs:setup`, set tasks file to `none`. The overdue-tasks section will be omitted from briefs.
+**Can I use this without the task-tracking?**  
+Yes. Set `tasks_file: none` in setup. The overdue section drops; everything else still works.
 
-**What's the token cost?**
-Roughly $0.15–$0.60/day on Sonnet depending on your poll interval. Morning + EOD are fixed cost (~5k tokens each); poll cost scales with interval.
+**What's the token cost?**  
+~$0.15–$0.60/day on Sonnet depending on poll interval. Morning + EOD are fixed (~5k tokens each); poll scales with interval.
 
-**Can I add tools beyond the built-in MCPs (Salesforce, Intercom, Zendesk, etc.)?**
-Yes. Two paths: (a) if you have a Claude Code MCP for the tool, the plugin calls it directly. (b) If no MCP exists but the tool emails you summaries (e.g. Granola, Otter, Fireflies, Fathom for meeting transcripts), the plugin searches Gmail for those emails using a pattern you provide. Both paths are read-only — no work offers from additional integrations in v1. See [docs/integrations.md](docs/integrations.md#additional-integrations-any-tool) for details and example patterns.
+**Can I add my own tools (Salesforce, Intercom, Zendesk, etc.)?**  
+Yes. Either via a Claude Code MCP, or — for tools that email you summaries (Granola, Otter, Fireflies, Fathom) — via a Gmail search filter. Both paths are read-only in v1. See [docs/integrations.md](docs/integrations.md#additional-integrations-any-tool).
 
-**Does this work with Codex / Gemini / other agents?**
-Not yet. v1 is Claude Code only.
+**Other agents (Codex, Gemini)?**  
+v1 is Claude Code only.
 
 ---
 
 ## Contributing / issues
 
-File issues at https://github.com/williamhscholl/daily-workflow-briefs/issues.
+File issues at [github.com/williamhscholl/daily-workflow-briefs/issues](https://github.com/williamhscholl/daily-workflow-briefs/issues).
 
 ## License
 
