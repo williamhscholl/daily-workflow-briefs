@@ -10,6 +10,34 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.7.5] — 2026-04-28
+
+### Added
+- **Slack-tagging flow for setup wizard.** Setup Steps 4 and 5 (watch channels + DM-scan team members) collapse into a single new Step 4 that uses Slack's autocomplete for both. The wizard posts a DM to your self-DM channel asking you to reply with `@-mentions` of teammates and `#-mentions` of channels — mixed however you want. You then return to Claude Code, type `done`, and the wizard parses the resolved IDs out of the Slack message format (`<@U...>` for users, `<#C...|name>` for channels). Channel display names are extracted automatically; teammate names are fetched via `slack_read_user_profile`. Eliminates 5–15 manual ID lookups for a typical user.
+
+### Why
+The old flow was the highest-friction part of setup. Users had to click each channel → "Copy link" → grab the `C...` part of the URL → paste back into Claude → repeat ~6 times → then do the same dance for teammate user IDs. Slack already resolves `@-mentions` and `#-mentions` to fully-qualified IDs in its message format — the plugin just had to ask for them in Slack instead of asking the user to manually look them up.
+
+### Edge cases handled
+- **Deactivated users** — `slack_read_user_profile` 404s; logged and skipped.
+- **External-shared channels** — parse normally, kept.
+- **Bot users** — flagged for user confirmation before keeping (default no).
+- **Timeout** — 3-minute wait between DM post and `done`; wizard prompts "still there?" if no reply.
+- **Empty reply** — wizard catches and asks user to reply in the thread first.
+- **Slack MCP unavailable** — automatic fallback to manual paste flow (Path b).
+
+### Changed
+- Step renumbering: old Steps 6–18 are now 5–17 (channels + team merged into Step 4). Body cross-references updated:
+  - Step 6 (Built-in integrations) "verify in Step 12" → "Step 13" (was a pre-existing bug; Step 12 was Work-offer preview, not MCP check)
+  - Step 7 (Meeting transcriber) "verify in Step 14" → "Step 13"
+  - Step 13 (MCP connection check) "any from Step 9" → "Step 8"
+
+### Migration from v0.7.4
+- New users see the Slack-tagging flow during `/briefs:setup`.
+- Existing users — your config is already written, no action needed. To take advantage of the new flow on a re-setup, run `/briefs:setup` (overwrites config) and pick path (a) when offered.
+
+---
+
 ## [v0.7.4] — 2026-04-28
 
 ### Fixed (real bugs surfaced from setup-wizard cold-test)

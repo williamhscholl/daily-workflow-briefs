@@ -36,31 +36,96 @@ Ask each one at a time. After each, confirm back what you heard before moving on
 
 5. **Timezone** (default from role preset, usually `America/Los_Angeles`). Confirm or override. Accept IANA names (`Europe/Lisbon`) or common aliases (`PT`, `ET`, `Lisbon`, etc.).
 
-## Step 4 — Watch channels
+## Step 4 — Watch channels + team (Slack-tagging flow)
 
-Ask: "What Slack channels should I watch for @-mentions of you and topics you care about? Paste them one at a time as `CID name` — e.g. `C03FEGLDB6J #engineering`. Type `done` when finished."
+This step captures BOTH watch channels AND DM-scan teammates in a single Slack message — letting the user tag everything via Slack autocomplete instead of looking up IDs by hand.
 
-Remind them to include at least: their team channel, their leadership channel, any customer-facing channel they monitor.
+### Offer the choice
 
-To get a channel ID: click the channel → channel name at top → "Copy link" → the `C...` part.
+Ask:
+> "I'll DM you in Slack so you can tag your teammates and channels there — saves you from looking up IDs. Two paths:
+>
+> (a) **Slack-tagging flow** [recommended] — I post to your self-DM, you reply with `@-mentions` and `#-mentions` of who/what to watch. Slack autocomplete prevents typos.
+> (b) **Manual paste** [fallback] — paste channel IDs and team `Name: UID` pairs here in chat.
+>
+> Pick a or b."
 
-## Step 5 — Team members
+### Path (a): Slack-tagging flow
 
-Ask: "Who's on your team? I'll DM-scan them every brief for asks directed at you. Paste one per line as `Name: UID` — e.g. `Sam Lee: U06D1LW0DV3`. Type `done` when finished."
+1. Post via `slack_send_message` to `slack_self_dm` (captured in Step 3):
 
-Confirm the count when they're done ("Got 6 team members.").
+   ```
+   👋 Setup time. Reply to this thread with:
+   • @-mentions of every teammate I should DM-scan for asks directed at you
+   • #-mentions of every channel I should watch for @-mentions of you
 
-## Step 6 — VIPs
+   Mix them however you want — order doesn't matter. Example:
+   @Sam Lee @Riya Chen #engineering #leadership #product-feedback
+
+   Switch back to Claude Code and type `done` when finished.
+   ```
+
+   Save the message's `ts` — you'll use it as `thread_ts` to read replies.
+
+2. In Claude Code, prompt:
+   > "DM sent. Switch to Slack, reply in the thread with your @-mentions and #-mentions, then type `done` here when finished. (Or `skip` to switch to manual paste.)"
+
+3. When the user types `done`:
+
+   - Call `slack_read_thread` on the DM message's `ts`. Read the user's most recent reply.
+   - Parse the reply text:
+     - **Teammate IDs**: regex `<@(U[A-Z0-9]+)>` — captures user IDs from @-mentions.
+     - **Channel IDs + names**: regex `<#(C[A-Z0-9]+)\|([a-z0-9_-]+)>` — Slack stores channel mentions in pipe-separated format (`<#C123|channel-name>`), giving you both ID and display name in one match.
+   - For each captured user ID, call `slack_read_user_profile` to fetch the display name. Tolerate failure (rate-limit / deactivated user) — fall back to "User <UID>" placeholder; the user can rename later.
+
+4. Show the captured list back in Claude:
+
+   > "Got <N> channels and <M> teammates from Slack:
+   >
+   > **Channels:**
+   > • C03FEGLDB6J: #arrakis
+   > • C04FL97MMBJ: #landstraad
+   > • C01SBUF2K6E: #product
+   >
+   > **Teammates:**
+   > • Maria Paz Goni (U08FYBTLAEQ)
+   > • Raphael Carvalho (U098F0GGV1D)
+   >
+   > Look right? (yes / edit / redo)"
+
+5. **`yes`** — store both lists, move on.
+   **`edit`** — ask which to add/remove; accept follow-up text in chat.
+   **`redo`** — post a fresh DM and start step 3 over. (No need to delete the previous message; just stop reading from it.)
+
+### Path (b): Manual paste fallback
+
+Use this when the user picks (b), or if the Slack MCP is unavailable.
+
+**Channels** — Ask: "Paste channels one at a time as `CID name` — e.g. `C03FEGLDB6J #engineering`. Type `done` when finished. To get a channel ID: click the channel → channel name at top → 'Copy link' → grab the `C...` part of the URL."
+
+**Team** — Ask: "Paste teammates one per line as `Name: UID` — e.g. `Sam Lee: U06D1LW0DV3`. Type `done` when finished. To get a user ID: click their profile → three dots → 'Copy member ID'."
+
+Confirm counts when done ("Got 5 channels and 4 teammates.").
+
+### Edge cases (both paths)
+
+- **Deactivated users** parse as a normal `<@U...>` but `slack_read_user_profile` returns 404 — log "Heads up: <UID> looks deactivated, skipping" and don't include them in the team list.
+- **External-shared channels** still parse via `<#C...|name>`. Keep them.
+- **Bot users / apps** — if a `<@U...>` resolves to a bot or app, note it in the captured list but ask the user to confirm: "U07BOTXYZ is a bot — keep it for DM-scanning?" (Default no.)
+- **Timeout on Path (a)**: if 3 minutes pass with no reply in the DM thread AND no `done` typed in Claude, prompt: "Still there? Type `done` once your Slack reply is posted, or `skip` to switch to manual."
+- **Empty reply**: if the user types `done` but the DM thread has no reply text, ask them to reply in the thread first, then say `done` again.
+
+## Step 5 — VIPs
 
 Ask: "Any VIPs whose emails and messages always deserve attention? (Your boss, a key client, an executive who pings you often.) Paste as `Name: email@domain` — one per line. Type `done` when finished."
 
 Pre-fill common tiers from the role preset (Sales: CEO/CRO; Product: CEO/Head of Eng; etc.) — just ask the user to fill in the names/emails.
 
-## Step 7 — Built-in integrations
+## Step 6 — Built-in integrations
 
 Ask each in order:
 
-**Slack**: required, always on. Confirm "Slack MCP is connected? (I'll verify in Step 12.)"
+**Slack**: required, always on. Confirm "Slack MCP is connected? (I'll verify in Step 13.)"
 
 **Google Calendar**: required, always on. Same check.
 
@@ -70,7 +135,7 @@ Ask each in order:
 
 **HubSpot**: ask "Do you use HubSpot for deals? (yes / no)". If yes: "I'll add read-only deal summaries to briefs and offer to add notes to deals — NEVER change deal stage, amount, or owner. OK?"
 
-## Step 8 — Meeting transcriber
+## Step 7 — Meeting transcriber
 
 This is one of the highest-signal sources for daily briefs — meeting recaps tell you who committed to what. Almost everyone uses one of these.
 
@@ -112,7 +177,7 @@ Loom doesn't have a public MCP yet, so Loom is Gmail-only.
 | 7. None | `none` | (n/a) | (n/a) | (n/a) |
 | 8. Custom | `custom` | (ask) | (ask) | (ask if gmail) |
 
-For Zoom (option 1): tell the user "I'll use the Zoom MCP to pull `summary_plain_text` from each completed meeting. Make sure your Zoom MCP is connected (I'll verify in Step 14). If you don't have it, fallback Gmail pattern is `from:no-reply@zoom.us subject:\"Meeting assets\" newer_than:1d`, but that's lower-fidelity than the MCP — Zoom MCP strongly recommended."
+For Zoom (option 1): tell the user "I'll use the Zoom MCP to pull `summary_plain_text` from each completed meeting. Make sure your Zoom MCP is connected (I'll verify in Step 13). If you don't have it, fallback Gmail pattern is `from:no-reply@zoom.us subject:\"Meeting assets\" newer_than:1d`, but that's lower-fidelity than the MCP — Zoom MCP strongly recommended."
 
 For options 2–5: prefer MCP. Show the install link. Offer Gmail fallback as an explicit second choice.
 
@@ -124,7 +189,7 @@ For option 8 (Custom): ask tool name, source (MCP or Gmail), and the correspondi
 
 **Confirm the choice and pattern back to the user before continuing.**
 
-## Step 9 — Additional integrations (optional)
+## Step 8 — Additional integrations (optional)
 
 Ask: "Any other tools you want briefs to scan? Examples:
 - Tools with a Claude Code MCP — Salesforce, Intercom, Zendesk, Linear, GitHub, Notion, Asana
@@ -169,7 +234,7 @@ Tell the user: "Open Claude Code → Settings → MCP Servers and search for `<t
 - **Read-only in v1.** No work offers from these tools regardless of source.
 - **Confirm at the end:** show the full list (name, source, description/query) so the user can sanity-check before continuing.
 
-## Step 10 — Brief times
+## Step 9 — Brief times
 
 Ask each in order, confirming what you heard back:
 
@@ -200,7 +265,7 @@ Ask each in order, confirming what you heard back:
 
 3. **Weekend runs**: "Skip weekends? (default yes — most people don't want weekend briefs.)" Yes → weekdays only. No → include Saturday + Sunday.
 
-## Step 11 — Poll interval
+## Step 10 — Poll interval
 
 Ask: "How often should the throughout-the-day poll run? It checks thread replies, executes approved offers, and scans new signals — running between your morning brief at <morning_time> and your EOD brief at <eod_time>. More often = more responsive + more tokens. Options:
 
@@ -212,7 +277,7 @@ Ask: "How often should the throughout-the-day poll run? It checks thread replies
 
 Rough token cost per day: 30min ≈ 40–60k tokens, 1hr ≈ 20–30k, 90min ≈ 15k, 2hr ≈ 12k. On Sonnet that's roughly $0.60 / $0.30 / $0.20 / $0.15 per day respectively (varies with activity)."
 
-## Step 12 — Work-offer preview detail
+## Step 11 — Work-offer preview detail
 
 Ask: "When the briefs offer to do work for you, how much detail do you want in the offer message?
 
@@ -223,23 +288,23 @@ Pick one."
 
 Store as `work_offer_preview: summary` or `work_offer_preview: full`.
 
-## Step 13 — Tasks file location
+## Step 12 — Tasks file location
 
 Ask: "Where should I keep your tasks.md? (default `~/.claude/daily-workflow-briefs/tasks.md`, or paste your own path. To skip task tracking entirely, say `none`.)"
 
 If the default doesn't exist yet, tell them: "I'll create it from a starter template so the morning brief has something to read." Copy `templates/tasks.md.starter` from the plugin dir to their chosen path.
 
-## Step 14 — MCP connection check
+## Step 13 — MCP connection check
 
 Check which MCPs are connected (by trying minimal calls or reading `~/.claude/settings.json`):
 - ✓ Required: Slack, Gmail, Google Calendar
 - ✓ Required if `meeting_transcriber.type: zoom`: Zoom MCP
 - Optional based on config: Atlassian/Jira, HubSpot
-- Additional: any from Step 9
+- Additional: any from Step 8
 
 For any missing MCP, tell the user which one and link to `docs/integrations.md` for setup instructions. Warn them briefs will fail or have reduced signal if required MCPs aren't connected by the time the cron fires.
 
-## Step 15 — Write config
+## Step 14 — Write config
 
 Write `~/.claude/daily-workflow-briefs/config.md` in this format. Keep it human-readable — the user may edit it later.
 
@@ -300,7 +365,7 @@ eod_lookback_hours: 12
 tasks_file: ~/.claude/daily-workflow-briefs/tasks.md
 ```
 
-## Step 16 — Schedule the three briefs
+## Step 15 — Schedule the three briefs
 
 Use `mcp__scheduled-tasks__create_scheduled_task` three times (confirm with the user before firing each). Use the user's chosen `morning_time`, `eod_time`, `poll_interval_minutes`, and `timezone`. If `run_on_weekends` is true, use `* * *` day-of-week instead of `1-5`.
 
@@ -327,13 +392,13 @@ Use `mcp__scheduled-tasks__create_scheduled_task` three times (confirm with the 
 
 3. **eod-brief** — cron `<eod_min> <eod_hour> * * <dow>`. Runs the `eod-brief` skill.
 
-## Step 17 — Offer a dry run
+## Step 16 — Offer a dry run
 
 Ask: "Want me to run the morning brief once right now as a dry run? It'll post to your self-DM."
 
 If yes: invoke the `morning-brief` skill immediately.
 
-## Step 18 — Wrap up
+## Step 17 — Wrap up
 
 Show a short summary:
 - ✓ Config at `~/.claude/daily-workflow-briefs/config.md`
