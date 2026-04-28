@@ -10,6 +10,19 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.7.2] — 2026-04-28
+
+### Added
+- **README "How the pieces fit together" architecture diagram.** New sub-section under "How your work is organized" with an ASCII flowchart showing the foundation layer (`config.md` → `tasks.md`) feeding three skill categories: BRIEFS (push state to Slack), SYNC (poll reads your replies, edits tasks.md), ON-DEMAND (the `tasks` chat skill). Followed by a tight three-paragraph explainer covering the implicit-vs-explicit reply-handling nuance and how slash commands fit in.
+
+### Why
+The README defined the data model (v0.6.2/v0.6.3) but didn't show the *flow* — readers had to infer the relationship between the four skills, the two foundation files, and the two surfaces (Slack vs. chat). The diagram makes the trust boundary obvious: file-based state is the single source of truth; skills are stateless workers reading/writing those files.
+
+### Migration from v0.7.1
+No action required — README-only docs change.
+
+---
+
 ## [v0.7.1] — 2026-04-28
 
 ### Changed

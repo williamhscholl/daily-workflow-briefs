@@ -75,6 +75,50 @@ That's the whole data model. Plain markdown, version-controllable, editable in a
 
 > Don't want the task layer? Set `tasks_file: none` during setup and the briefs run as pure summarizers — no goal/task tracking, just signal aggregation.
 
+### How the pieces fit together
+
+```
+                  ┌────────────────────────────────────┐
+                  │            config.md               │
+                  │   identity • channels • schedule   │
+                  │   team • VIPs • integrations       │
+                  │   (read by every skill below)      │
+                  └─────────────────┬──────────────────┘
+                                    │
+                  ┌─────────────────▼──────────────────┐
+                  │             tasks.md               │
+                  │    goals → tasks → monitoring      │
+                  │   (your work — read AND written    │
+                  │    by the briefs as you approve)   │
+                  └─────────────────┬──────────────────┘
+                                    │
+       ┌────────────────────────────┼────────────────────────────┐
+       ▼                            ▼                            ▼
+┌──────────────────┐       ┌──────────────────┐       ┌──────────────────┐
+│      BRIEFS      │       │       SYNC       │       │     ON-DEMAND    │
+│  → Slack self-DM │       │  → Slack self-DM │       │  → Claude chat   │
+├──────────────────┤       ├──────────────────┤       ├──────────────────┤
+│ morning-brief    │       │ brief-poll       │       │ tasks            │
+│  today's agenda  │       │  syncs your      │       │                  │
+│  7:30 am         │       │  Slack replies   │       │  "top three?"    │
+│                  │       │  into tasks.md   │       │  "overdue?"      │
+│ eod-brief        │       │  hourly 8a–4p    │       │  "waiting on?"   │
+│  day recap +     │       │                  │       │                  │
+│  tomorrow's plan │       │                  │       │                  │
+│  3:30 pm         │       │                  │       │                  │
+└──────────────────┘       └──────────────────┘       └──────────────────┘
+```
+
+The four skills share `config.md` (your settings) and `tasks.md` (your work) as foundation files.
+
+**Briefs** push state out to you — morning agenda, end-of-day recap, tomorrow's top 3 — and post to your Slack self-DM on a fixed schedule. They never edit `tasks.md` themselves; they only present it.
+
+**Sync** is the inverse direction. The poll reads your thread replies and converts them into edits on `tasks.md`. It picks up both **explicit approvals** (`apply 1`, `skip 2`, `edit 1: …`) and **natural-language updates** (`mark X done`, `add a task to <goal>`, `move Y to Friday`). Posts a `✅ Tasks updated` confirmation in-thread.
+
+**On-demand** is `tasks` — fires when you ask in Claude Code chat. Reads `tasks.md` directly, no Slack involvement.
+
+Slash commands (`/briefs:setup`, `/briefs:run morning|eod|poll`, `/briefs:help`, `/briefs:config`, `/briefs:monitoring`) are manual entry points that invoke any of the above directly — useful for testing, ad-hoc runs, or as alternatives to natural language.
+
 ---
 
 ## Quick start
