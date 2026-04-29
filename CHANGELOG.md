@@ -10,6 +10,23 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.8.3] — 2026-04-29
+
+### Changed
+- **Banner redesigned for stronger conceptual clarity.** Replaced the v0.8.2 banner with a simpler, more structural version:
+  - **Slack mockup is now organized by Briefs's actual data model** — Tasks / Meetings / Monitoring sections, each with a category icon. Mirrors the schema the README documents in "How your work is organized."
+  - **Multi-source flow diagram** showing Slack / Gmail / Zoom / Calendar icons feeding into a list — visualizes "automatic updates from multiple sources" instead of just claiming it in copy.
+  - **`Review` button label** instead of `Approve` — accurately reflects that work-offers are drafts the user reviews, not commitments that auto-publish.
+  - Tighter description: "Automatically updates from multiple sources. Offers to do work for you. All in Slack."
+
+### Why
+The v0.8.2 banner showed a realistic-looking daily brief screenshot, which was good for "this is what you'll see" but didn't communicate Briefs's *structure*. The new banner makes the data model legible at a glance — first-time visitors see Tasks/Meetings/Monitoring as the three pillars before reading any copy. The flow diagram does heavy lifting for the "automatic updates" claim that text alone doesn't.
+
+### Migration from v0.8.2
+None. Same file path (`assets/briefs-banner.png`), same README reference, just a new image.
+
+---
+
 ## [v0.8.2] — 2026-04-29
 
 ### Added
