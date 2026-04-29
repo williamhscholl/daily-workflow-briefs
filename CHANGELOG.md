@@ -10,6 +10,46 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.8.0] — 2026-04-28
+
+**Theme: EOD offers are back, with a real handoff to next morning's brief.**
+
+In v0.2.0, EOD work-offers were removed because the poll didn't run after EOD — any offer posted at 3:30pm would sit unactioned overnight. v0.8.0 fixes the actual problem (no overnight processing path) instead of avoiding it (no overnight offers): the morning brief now picks up where the EOD thread left off.
+
+### Added
+- **EOD brief posts work offers again.** Same allowlist as the morning brief (Confluence edit, Jira comment, Slack draft, tasks.md write, HubSpot note). Offers are scoped to the EOD thread and written to `.offers.jsonl` with the EOD message's `ts` as `brief_thread_ts`. ([`skills/eod-brief/SKILL.md`](skills/eod-brief/SKILL.md), Steps 6–7.)
+- **EOD-specific reply prompt.** Closing line is intentionally different from morning/poll offers:
+  > *Reply in your own tone — `accept`, `edit`, `skip`, or `show more` on any of the numbered suggestions above. I'll pick up your reply in tomorrow's morning brief and follow through then.*
+  No "need it sooner / run the poll" line — the poll is asleep overnight by design; the morning brief handles the handoff.
+- **Morning brief Step 1.5: EOD-thread carryover.** New step that runs BEFORE signal gathering. It finds yesterday's EOD message in the user's self-DM (24h lookback; 96h on Mondays / post-OOO), reads the thread, processes any `accept` / `edit` / `skip` / natural-language replies through the same execution path the poll uses, and writes a `source: eod_carryover` entry to `.poll-log.jsonl` so the same replies don't get re-processed if the morning brief ever runs twice.
+- **`📥 Carried over from yesterday's EOD` section** at the top of the morning brief output. Lists what was applied / edited / skipped / errored from yesterday's EOD thread. Section is omitted entirely when there's nothing to carry over (no "no carryover" noise).
+
+### Changed
+- README "What Briefs can do on your behalf" note flipped: was "EOD does NOT post offers — they'd sit overnight", now describes the carryover handoff and the EOD-specific reply phrasing.
+- README "How the pieces fit together" body text: BRIEFS paragraph now mentions the morning brief's carryover-first behavior so the dual responsibility (push today's brief + pull yesterday's overnight replies) is explicit.
+
+### Why undo v0.2.0?
+v0.2.0 was the right call given v0.2.0-era constraints: no overnight processing, so any EOD offer was effectively ignored. The fix at the time was to surface afternoon action-items in tomorrow's morning offers instead. That worked, but it loses fidelity — the user can't approve the *specific* phrasing of an afternoon ask while it's still fresh in their head; they have to wait for the morning brief to surface a re-derived version.
+
+v0.8.0's carryover changes the equation: an offer posted at 3:30pm that the user accepts at 11pm sits in the EOD thread until 7:30am the next morning, when the morning brief picks it up and applies it before doing anything else. The user gets immediate feedback (the offer message is right there at EOD time), can mull overnight, can edit late, and the actual execution happens before they're even back at their desk.
+
+### Idempotency / safety
+- The carryover step won't re-process a reply it's already applied. It checks `.poll-log.jsonl` for prior entries with matching `brief_thread_ts` AND `source: eod_carryover` — replies older than the latest such entry are skipped.
+- If an offer errored mid-execution during a previous poll cycle, the carryover step picks it up again. (The offer's status in `.offers.jsonl` will be `errored`, not `applied`, so the carryover won't dedup it as already-done.)
+- 10-approval rate-limit applies to the carryover too — first 10 approvals execute, the rest defer to the next poll cycle (which fires hourly during the day).
+
+### Migration from v0.7.7
+- **Existing users** — your EOD brief will start posting offers automatically the next time it fires. The morning brief will start running the carryover step automatically the next time it fires. No config changes, no opt-in, no opt-out.
+- **If you don't want EOD offers** — there's no toggle in v0.8.0 (the assumption is that everyone wants them now that the overnight handoff exists). If demand surfaces, a `disable_eod_offers: true` config field is straightforward to add in v0.8.x.
+- **Existing `.poll-log.jsonl` and `.offers.jsonl`** — fully backward-compatible. The carryover step only reads/writes new entries; old entries pass through untouched.
+
+### Files touched
+- [`skills/eod-brief/SKILL.md`](skills/eod-brief/SKILL.md) — Step 6 reversed (was "DO NOT post offers", now "Synthesize offers"); Step 7 added ("Post offers as first reply to EOD thread") with EOD-specific reply prompt.
+- [`skills/morning-brief/SKILL.md`](skills/morning-brief/SKILL.md) — Step 1.5 added (EOD carryover); brief output template gains a `📥 Carried over from yesterday's EOD` section.
+- [`README.md`](README.md) — "EOD doesn't post offers" note replaced; "How the pieces fit together" body text updated.
+
+---
+
 ## [v0.7.7] — 2026-04-28
 
 ### Changed

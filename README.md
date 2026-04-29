@@ -87,7 +87,7 @@ Two levels: **goals** (projects/objectives like "Q2 Roadmap" or "Hire QA Lead") 
 
 The four skills share `config.md` (your settings) and `tasks.md` (your work) as foundation files.
 
-**Briefs** push state out to you — morning agenda, end-of-day recap, tomorrow's top 3 — on a fixed schedule. They never edit `tasks.md`; they only present it.
+**Briefs** push state out to you — morning agenda, end-of-day recap, tomorrow's top 3 — on a fixed schedule. The morning brief also runs a "carryover" pass first: it reads any approvals you posted to last night's EOD thread and applies them before producing today's brief, so nothing accepted overnight gets lost.
 
 **Sync** is the inverse direction. The poll reads your thread replies and converts them into edits on `tasks.md`. It picks up both **explicit approvals** (`accept 1`, `skip 2`, `edit 1: …`, `show more 3`) and **natural-language updates** (`mark X done`, `add a task to <goal>`, `move Y to Friday`). Posts a `✅ Tasks updated` confirmation in-thread.
 
@@ -201,7 +201,7 @@ Every execution shows the exact text/diff applied, in-thread, so you can catch m
 
 **Preview detail:** during setup, pick `summary` (one-line offers; type `show 1` to expand) or `full` (full preview inline). Change later via `/briefs:config switch preview to full`.
 
-> The EOD brief does NOT post offers — the periodic checker runs 8am–4pm, so any EOD offer would sit unactioned overnight. Action items from afternoon meetings surface in next morning's offers.
+> The EOD brief posts offers, but they're processed differently than morning/poll offers — the next morning's brief reads any replies you posted overnight and applies them as a "carryover" pass before producing the morning brief itself. Confirmations show up at the top of the morning brief in a `📥 Carried over from yesterday's EOD` section. The EOD offer message tells you this explicitly: "I'll pick up your reply in tomorrow's morning brief and follow through then."
 
 ---
 

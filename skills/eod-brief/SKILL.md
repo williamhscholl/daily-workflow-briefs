@@ -179,13 +179,61 @@ If any MCP errored, append `_Signals skipped: [list]_` at the bottom (above the 
 
 If the day is empty (no meetings, no signals), post a short "Light day — nothing flagged. Rest up." (and append the weekend line if Friday) then stop.
 
-## Step 6 — DO NOT post work offers from EOD
+## Step 6 — Synthesize "🤝 Work I can do for you"
 
-The poll runs 8am–4pm weekdays. EOD posts at 3:30pm by default. Any work offers posted at EOD would have at most one poll cycle to be approved (often zero — most users won't reply between 3:30pm and the last poll). Unapproved offers then sit overnight until next morning's brief, which already produces fresh offers based on overnight signals.
+Same allowlist and same logic as the morning brief's Step 5–6. Scan today's afternoon signals (post-noon meeting next-steps, late-day Slack threads, Gmail asks the user committed to in a reply) for delegable actions matching the allowlist.
 
-**For v1: EOD does NOT emit work offers.** Surface action-required items in the Tomorrow's Top 3 section instead — the user reviews them tomorrow morning when they have time to act.
+**Allowlist (same as morning brief):**
+- ✅ Edit/append a Confluence page (with diff preview)
+- ✅ Add a comment to a Jira ticket (with preview)
+- ✅ Draft a Slack reply (drafted only, never auto-sent)
+- ✅ Add / update / mark-done a task in `tasks.md`
+- ✅ Add a read-only note to a HubSpot deal
+- ❌ Send email • Change Jira status/assignee/priority • Change HubSpot deal stage/amount/owner • Anything destructive • Write actions on additional integrations (read-only in v1)
 
-If a delegable ask appears in afternoon signals, the next morning brief will pick it up (overnight signal scan covers the previous afternoon).
+If zero offers, skip Step 7 (don't post an empty offers reply).
+
+## Step 7 — Post work offers as FIRST REPLY to the EOD thread
+
+If Step 6 produced offers, post them as a thread reply to the EOD message (use the `thread_ts` from the message you posted in Step 5). Format mirrors the morning brief, with one critical difference: the closing line points at *tomorrow's morning brief*, not "the next poll" — because the poll doesn't run overnight.
+
+**Format depends on `config.work_offer_preview` (default `summary`):**
+
+If `summary`:
+```
+🤝 *Work I can do for you* — reply here to approve
+
+1. [Short verb + target] — [one-line context]
+2. [Short verb + target] — [one-line context]
+3. [Short verb + target] — [one-line context]
+
+Reply in your own tone — `accept`, `edit`, `skip`, or `show more` on any of the numbered suggestions above. I'll pick up your reply in tomorrow's morning brief and follow through then.
+```
+
+If `full`:
+```
+🤝 *Work I can do for you* — reply here to approve
+
+*1. [Short verb + target]*
+> [Full preview text / diff inline]
+
+*2. [Short verb + target]*
+> [Full preview text / diff]
+
+Reply in your own tone — `accept`, `edit`, or `skip` any of the suggestions above. I'll pick up your reply in tomorrow's morning brief and follow through then.
+```
+
+**Write each offer to the offers ledger** so tomorrow's morning brief can find them by number. Append a JSON line to `~/.claude/daily-workflow-briefs/.offers.jsonl`:
+
+```json
+{"ts": "<ISO timestamp>", "brief_thread_ts": "<EOD message ts>", "offer_number": 1, "offer_id": "uuid-or-hash", "action_type": "confluence_edit|jira_comment|slack_draft|task_add|task_done|task_update|hubspot_note", "target": "<url or identifier>", "preview": "<full text/diff>", "source_signal": "<where this came from>", "status": "offered"}
+```
+
+The `offer_number` resets to 1 for this EOD thread (scoped by `brief_thread_ts`). Tomorrow's morning brief Step 1.5 (the EOD carryover) reads `.offers.jsonl` plus the EOD thread replies and processes approvals before producing today's brief.
+
+### Why EOD offers no longer "sit unactioned overnight"
+
+This was the rationale for removing EOD offers in v0.2.0: the poll didn't run after EOD, so any offer would just sit there until the next morning. v0.8.0 fixes this by adding **morning-brief Step 1.5** — a carryover pass that runs BEFORE the morning's signal gathering, reads yesterday's EOD thread for `accept` / `edit` / `skip` replies, and processes them through the same execution path the `brief-poll` skill uses. The user gets confirmations at the top of the morning brief (`📥 Carried over from yesterday's EOD`) so nothing approved overnight gets lost.
 
 ## Hard constraints
 

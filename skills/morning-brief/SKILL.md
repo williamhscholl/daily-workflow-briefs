@@ -23,6 +23,41 @@ If the config file doesn't exist, tell the user to run `/brief-setup` first and 
 
 Also read `$tasks_file` if it exists — source of truth for "overdue" section.
 
+## Step 1.5 — Process leftover replies from yesterday's EOD brief (carryover)
+
+The `brief-poll` skill stops running before EOD posts (8am–4pm window). Any approvals the user typed into the EOD thread between EOD posting (~3:30pm) and yesterday's last poll won't have been processed by the time you wake up. This step closes that gap so nothing approved overnight gets lost.
+
+Run this BEFORE Step 2 (lookback) and Step 3 (signal gathering) so any task changes are reflected in today's `🔴 Overdue` and `⏳ Owed to You` sections.
+
+**Workflow:**
+
+1. **Find yesterday's EOD message in the user's self-DM.** Use `slack_read_channel` on `config.slack_self_dm` and look for the most recent bot message containing `🌇` (EOD emoji) posted before today's morning-brief run time.
+   - Standard lookback: 24 hours.
+   - **On Mondays / day-after-OOO**: extend the lookback to 96 hours so weekend / holiday EOD replies don't get lost. Detect Mondays via `config.timezone`; detect post-OOO by scanning calendar for an OOO event in the last 1–3 days.
+   - If no EOD message found within the lookback, **skip Step 1.5 entirely** (nothing to carry over).
+
+2. **Read the EOD thread.** Call `slack_read_thread` on the EOD message's `ts`. Filter replies to the user's `slack_user_id` only (skip bot messages — including any `✅ Tasks updated` confirmations from prior carryover runs).
+
+3. **Skip already-processed replies.** Read `~/.claude/daily-workflow-briefs/.poll-log.jsonl`. Look for any prior log entry with `brief_thread_ts` matching this EOD thread's `ts` AND `source: eod_carryover` (or `source: poll` from yesterday's afternoon polls that touched this thread). Replies with `ts` ≤ the latest such processed-timestamp are already handled — skip them. Process only newer replies.
+
+4. **Apply the same parsing logic as `brief-poll` Steps 3–5.** Match `accept N` / `apply N` / `skip N` / `show more N` / `edit N: ...` / `accept all` against `.offers.jsonl` entries scoped to this EOD thread's `brief_thread_ts`. Also match natural-language patterns (`mark X done`, `add a task to <goal>`, `move Y to Friday`, etc.). Strip conversational filler before matching. Execute approved offers through the allowlist (Confluence edit, Jira comment, Slack draft, tasks.md write, HubSpot note).
+
+5. **Append a poll-log entry tagged `source: eod_carryover`** so this thread doesn't get re-processed if the morning brief ever runs twice in a day:
+
+   ```json
+   {"ts": "<ISO timestamp>", "brief_thread_ts": "<EOD ts>", "source": "eod_carryover", "replies_processed": <N>, "tasks_added": <N>, "tasks_modified": <N>, "offers_applied": <N>, "offers_skipped": <N>, "offers_edited": <N>, "errors": <N>, "notes": "<one-line summary>"}
+   ```
+
+6. **Surface the results at the TOP of today's morning brief output** as the leading section (see Step 7's template — `📥 *Carried over from yesterday's EOD*`). Same formatting conventions as the poll's confirmation message: brief, plain-English, list of changes grouped by type (Applied / Edited / Skipped / Tasks updated / Errors).
+
+7. **If nothing was processed**, skip the carryover section in the brief output entirely. Don't render "no carryover" — that's noise.
+
+**Edge cases:**
+- **EOD didn't post offers yesterday** — possible if Step 6 of EOD found zero delegable asks. The thread may still have natural-language replies ("mark X done") — process those normally; just no `accept N` entries to look up.
+- **Mid-execution failure** — if applying one offer errors, mark it `errored` in `.offers.jsonl` and continue with the rest. Surface the error in the carryover section.
+- **EOD thread is missing** (user deleted it, or it's stale beyond the lookback) — skip silently.
+- **More than 10 approvals in carryover** — apply the first 10 and defer the rest with `⏸ 10 applied — N more pending; will continue next poll`. Same rate-limit pattern the regular poll uses.
+
 ## Step 2 — Resolve lookback window
 
 Times are in `config.timezone` throughout.
@@ -214,6 +249,14 @@ Post ONE message to `config.slack_self_dm` via `slack_send_message`. Skip sectio
 ```
 🌤 *Daily Brief — [Weekday], [Month Day]*
 [One sentence: theme of the day]
+
+📥 *Carried over from yesterday's EOD*
+• ✓ Applied: <action> — <link to target>
+• ✏️ Edited: <action> (still awaiting `accept N`)
+• ⏭ Skipped: <action>
+• ➕ Tasks added: <N> — see <goal> for details
+• 🚨 Errored: <action> — <reason>
+(Section omitted entirely if no replies were carried over.)
 
 📅 *Today's Meetings*
 • HH:MM–HH:MM: Title (key attendees)
