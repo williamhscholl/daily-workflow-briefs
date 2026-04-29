@@ -10,15 +10,38 @@ Walk the user through setup ONE question at a time, in plain English. Never ask 
 
 Check if `~/.claude/daily-workflow-briefs/config.md` already exists.
 - If yes: tell the user you found an existing config and ask: "Re-run full setup (overwrites), update a specific field, or cancel?" If "update a specific field", invoke the `/briefs:config` flow instead.
-- If no: proceed to Step 2.
+- If no: open with the welcome below, then proceed to Step 2.
 
 Create the directory if missing: `mkdir -p ~/.claude/daily-workflow-briefs`
 
-## Step 2 — Role preset
+**Welcome message** (first-run only, before any questions):
 
-Ask: "What's your role? This pre-fills sensible defaults. Options: (1) Sales, (2) Customer Success, (3) Product, (4) Engineering, (5) Custom / other."
+> "👋 Briefs sets up your own personal, automatically-updating task list — delivered to you in Slack. I'll ask a few questions to configure it for you. **Pick from my numbered options when you see them, or just respond naturally** — I'll figure out what you mean either way. Ready when you are."
 
-Read the matching file from the plugin directory: `roles/sales.md`, `roles/cs.md`, `roles/product.md`, `roles/engineering.md`. If Custom, use `roles/_blank.md`.
+Wait for the user to acknowledge ("yes", "ok", "go", "ready", "let's do it" — anything affirmative). If they ask a clarifying question first, answer it briefly and re-prompt to begin.
+
+## Step 2 — Team preset
+
+Ask:
+> "What team are you on? This helps me pre-fill sensible defaults so I don't have to ask a million questions.
+>
+> 1. **Sales** — deals, pipeline, CRM
+> 2. **Customer Success** — accounts, health scores, renewals
+> 3. **Product** — roadmap, feedback, cross-functional coordination
+> 4. **Engineering** — PRs, incidents, technical work
+> 5. **Custom / other** — I'll start from scratch
+>
+> Pick a number, type the team name, or just describe your team in your own words."
+
+**Parse the response flexibly:**
+
+- If the user replies with a number 1–5 → map directly to that team.
+- If they type a team name that matches one of the five (case-insensitive, partial match OK — "sales", "CS", "Customer Success", "product", "eng", "engineering" all map cleanly) → pick that team.
+- If they type something that's clearly a **role** rather than a **team** (e.g. "Program Manager", "Account Executive", "DevOps Lead", "VP of Marketing", "Office Manager"), gently clarify: *"Got it — that's your role. Which team is that under? Sales / CS / Product / Engineering / Custom?"* Don't guess; let them pick.
+- If they type a team that isn't one of the five (e.g. "Marketing", "Operations", "HR", "Finance", "DevRel"), treat as Custom and remember the team name verbatim — use it later when surfacing role-flavor copy. Confirm: *"Got it — Marketing team. I'll start from scratch on the defaults since I don't have a built-in preset for that yet."*
+- If they reply with a sentence ("I'm in product but also do some CS-facing work" or "I lead a small DevOps team"), pick the dominant team and confirm before continuing.
+
+After mapping, read the matching file from the plugin directory: `roles/sales.md`, `roles/cs.md`, `roles/product.md`, `roles/engineering.md`. If Custom, use `roles/_blank.md`.
 
 The role file has suggested VIP tiers, watch-channel naming conventions, integration defaults. Use it as the starting point — you'll layer the user's specifics on top.
 
@@ -413,6 +436,10 @@ Tell them: "Edit `~/.claude/daily-workflow-briefs/config.md` directly any time. 
 ## Conversational rules
 
 - **You're in chat, not a terminal.** Never tell the user to "hit enter," "press a key," or otherwise act like a CLI. Use chat-natural verbs: `say` (for command words like `done` / `skip` / `default`), `tell me` (for free-form input), `pick a number` (for menu choices). When a step has a default, say "say `default` to accept it" or just describe what'll happen if they pick that option — never assume an enter-to-accept mechanism.
+- **Never tell the user "Step X of N" or "Step X of many".** The wizard has 17 steps internally but most are quick or silent — surfacing them as a count creates anxiety ("ugh, this is going to take forever"). Frame transitions naturally instead: "next up:", "one more thing:", "almost done:". If you want to give a sense of progress, do it qualitatively and only occasionally — never as a numerator/denominator.
+- **The user doesn't know what Briefs is yet.** Don't assume they know jargon ("self-DM", "MCP", "the poll", "tasks.md") on first contact. The Step 1 welcome message gives the one-line value prop; after that, introduce concepts as you ask about them, not before.
+- **Accept input flexibly.** When a step offers numbered options, the user might reply with the number, the name of the option, or a sentence describing what they want. Parse all three. If the input is genuinely ambiguous, ask one clarifying question — don't guess.
+- **Distinguish team vs. role.** The user might type a job title ("Program Manager", "Account Executive", "DevOps Lead") when you asked about their team. If their answer is a role rather than a team, briefly clarify: "Got it — that's your role. Which team is that under?" Don't pattern-match a role onto the wrong team preset silently.
 - ONE question at a time. Never dump a wall of fields.
 - Always confirm what you heard back before moving on.
 - Catch malformed input (e.g. `@user` instead of `U...`) with a gentle correction and example.

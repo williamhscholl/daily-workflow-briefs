@@ -10,6 +10,39 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.8.5] — 2026-04-29
+
+### Fixed (setup wizard onboarding pain from cold-tests)
+
+The setup wizard was written with the assumption that the person running it already understood Briefs. That's true for Will (the author) but false for every cold-test user. Three real frictions surfaced:
+
+1. **"Step 1 of many" creates upfront existential dread.** Users see "of many" and immediately think "this is going to take forever" before the wizard has even introduced itself. The internal step structure exists for the agent's reference, not for user-facing framing.
+2. **"What's your role?" with a list of *teams* set up a parsing trap.** A cold-test user almost typed "Program Manager" — a role, not a team — which would have either confused the wizard or routed them to the wrong preset. The question's wording didn't match what was being asked.
+3. **"Pick a number" was the only input affordance signaled.** Users who'd type the team name naturally weren't told that's also fine.
+4. **No upfront product framing.** The wizard jumped straight into a question without telling the user what Briefs is or what's about to happen.
+
+### Added
+- **Welcome message at first run.** Before any questions, the wizard now opens with: *"👋 Briefs sets up your own personal, automatically-updating task list — delivered to you in Slack. I'll ask a few questions to configure it for you. Pick from my numbered options when you see them, or just respond naturally — I'll figure out what you mean either way. Ready when you are."* Sets expectations + pre-permits flexible input + names what Briefs is.
+- **Step 2 reworded as "What team are you on?"** instead of "What's your role?". Matches what the wizard is actually asking.
+- **Step 2 input parser is now explicitly flexible.** Number works, team name works, "I'm in CS but help with Sales" works, role-typed-by-mistake gets a clarifying question. Custom team names ("Marketing", "Operations") are accepted as Custom and remembered verbatim.
+
+### Changed
+- **Conversational rules expanded.** Three new rules baked into the wizard's standing instructions:
+  - "Never tell the user 'Step X of N' or 'Step X of many'." Internal step structure is for the agent; user-facing framing uses natural transitions ("next up:", "one more thing:", "almost done:").
+  - "The user doesn't know what Briefs is yet." Don't lean on jargon (`self-DM`, `MCP`, `tasks.md`) before introducing the concept.
+  - "Distinguish team vs. role." If the user types a job title when asked about their team, clarify rather than guessing.
+
+### Why these matter
+The first 3 minutes of a setup wizard determine whether someone finishes it or quits. Existential framing ("of many"), parsing traps ("role" vs. "team"), and missing context ("what is this thing I'm setting up?") all increase the chance the user bails. Three out of three cold-tests hit at least one of these. The fixes are cheap; the conversion impact compounds across every future user.
+
+### Files touched
+- [`commands/setup.md`](commands/setup.md) — Step 1 (welcome), Step 2 (team preset rewrite), Conversational rules (three new rules)
+
+### Migration from v0.8.4
+None — wording-only changes in the wizard. Already-configured users are unaffected; new setup runs get the warmer opening.
+
+---
+
 ## [v0.8.4] — 2026-04-29
 
 ### Fixed (install onboarding pain surfaced from real cold-tests)
