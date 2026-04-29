@@ -1,5 +1,7 @@
 # Daily Workflow Briefs
 
+![Briefs — your work changes all day, your task list should too](assets/briefs-banner.png)
+
 ### Your work changes all day. Your task list should too.
 
 *An automatic task manager that lives in Slack.*

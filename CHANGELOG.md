@@ -10,6 +10,16 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.8.2] — 2026-04-29
+
+### Added
+- **GitHub repo banner.** A 16:9 marketing banner now renders at the top of the README. Shows the new tagline, three benefit cards (Daily updated tasks / Automatic, hands-free updates / Work I can do for you), and a realistic Slack mockup demonstrating the brief output + work-offer interaction. Stored at `assets/briefs-banner.png`. Mostly for short-term internal demo polish; also makes the repo look like a real product to first-time visitors.
+
+### Migration from v0.8.1
+README-only change. No skill or behavior changes.
+
+---
+
 ## [v0.8.1] — 2026-04-28
 
 ### Changed
