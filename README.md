@@ -106,25 +106,45 @@ Three steps. ~10 minutes.
 
 ### 1. Install Claude Code, then the plugin
 
-If you don't have Claude Code yet:
+**If you don't have Claude Code yet, install it.**
 
+Mac / Linux (open Terminal):
 ```bash
-# Mac / Linux (Terminal)
 curl -fsSL https://claude.ai/install.sh | bash
+```
 
-# Windows (PowerShell, NOT Git Bash)
+Windows (open PowerShell, NOT Git Bash):
+```powershell
 irm https://claude.ai/install.ps1 | iex
 ```
 
-> ⚠ Claude Code is a separate product from the Claude Desktop chat app. Restart your terminal after install, then verify with `claude --version`.
+> ⚠ Claude Code is a separate product from the Claude Desktop chat app — having the chat app installed isn't enough.
 
-Install the plugin:
+**Add Claude to your PATH** (Mac/Linux only — Windows installer handles this):
 
+The installer puts the `claude` binary at `~/.local/bin/claude` but doesn't auto-add it to your PATH. You'll see this in the installer's Setup notes. Run:
+
+```bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc
+```
+
+(If you use bash instead of zsh, replace `~/.zshrc` with `~/.bashrc`. macOS defaults to zsh — most readers can paste the line above as-is.)
+
+**Verify the install:**
+```bash
+claude --version
+```
+
+You should see something like `2.1.123`. If you get `zsh: command not found: claude`, the PATH step didn't take — close and reopen your terminal, then try `claude --version` again.
+
+**Install the plugin:**
 ```bash
 claude plugin marketplace add williamhscholl/daily-workflow-briefs && claude plugin install briefs@briefs
 ```
 
-(On PowerShell <7, run as two separate lines — `&&` requires PowerShell 7+.)
+(On Windows PowerShell <7, run as two separate lines — `&&` requires PowerShell 7+.)
+
+> 🛟 **If the plugin install command fails or hangs:** open the Claude Code desktop app and paste this in chat — *"Please install the Briefs plugin from github.com/williamhscholl/daily-workflow-briefs"*. Claude will run the right install commands for you. Then close and reopen the app (next step covers why).
 
 ### 2. Connect MCPs
 
@@ -139,7 +159,9 @@ See [docs/integrations.md](docs/integrations.md) for details.
 
 ### 3. Run setup
 
-In Claude Code chat:
+> ⚠ **Restart Claude Code before this step.** Newly-installed plugins don't register in active sessions — they get picked up at startup. Close and reopen Claude Code (terminal session OR desktop app). If you skip this, `/briefs:setup` returns "Unknown command."
+
+In a Claude Code chat:
 
 ```
 /briefs:setup
@@ -281,6 +303,45 @@ claude plugin uninstall briefs
 ```
 
 The three scheduled cron tasks stop firing. Config and `tasks.md` stay in `~/.claude/daily-workflow-briefs/` — delete that directory manually for a clean wipe.
+
+---
+
+## Install troubleshooting
+
+The most common issues, in order of how often they hit new users:
+
+### `zsh: command not found: claude` (or `bash: command not found: claude`) right after install
+
+The Claude Code installer puts the binary at `~/.local/bin/claude` but doesn't add it to your PATH. The installer prints a Setup note about this — easy to miss. Fix:
+
+```bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc
+```
+
+(For bash users, replace `~/.zshrc` with `~/.bashrc`.) Then close and reopen your terminal, and `claude --version` will work.
+
+### `/briefs:setup: Unknown command` after the plugin install completes
+
+Active Claude Code sessions don't pick up newly-installed plugins — the commands directory is scanned at startup. **Close and reopen Claude Code** (terminal session OR desktop app), then `/briefs:setup` will be there.
+
+### `claude plugin marketplace add ...` fails or hangs in the terminal
+
+Skip the CLI and use the desktop fallback: open Claude Code desktop, paste in chat — *"Please install the Briefs plugin from github.com/williamhscholl/daily-workflow-briefs"* — Claude will figure out and run the right install commands. Then **close and reopen the app** so the new commands register.
+
+### Plugin shows as installed but commands don't autocomplete
+
+Same as the "Unknown command" case above: restart Claude Code. Plugin commands are loaded at startup, not on-demand.
+
+### "It worked yesterday, broke this morning"
+
+Most likely a Claude Code version update changed plugin paths or behavior. Re-running the install commands usually fixes it:
+
+```bash
+claude plugin marketplace update briefs
+claude plugin update briefs@briefs
+```
+
+If something else broke (a brief firing wrong, an MCP failing, a poll missing replies), file an issue at [github.com/williamhscholl/daily-workflow-briefs/issues](https://github.com/williamhscholl/daily-workflow-briefs/issues) with what you saw vs. what you expected.
 
 ---
 

@@ -10,6 +10,42 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.8.4] — 2026-04-29
+
+### Fixed (install onboarding pain surfaced from real cold-tests)
+
+Three users (Will, Maria Paz, Hugo) hit the same install gauntlet over the past 48 hours. None of these are Briefs bugs — they're Claude Code install quirks plus one plugin-loading gotcha — but the README didn't acknowledge them, so users hit them blind.
+
+### Added
+- **Explicit PATH-fix step in Step 1.** The Claude Code installer drops the binary at `~/.local/bin/claude` and prints a Setup note about adding it to PATH that's easy to miss. New users typed `claude --version` and got `zsh: command not found`. Step 1 now includes the one-liner and explains why it's needed.
+- **Verify step.** After PATH fix, README explicitly tells users to verify with `claude --version` before moving on. Catches PATH issues immediately rather than three commands later.
+- **Restart-required warning in Step 3.** Active Claude Code sessions don't pick up newly-installed plugins — they're loaded at startup. Skipping a restart produces `/briefs:setup: Unknown command`. Step 3 now warns explicitly.
+- **Plugin-install fallback.** If the CLI `claude plugin marketplace add ...` command fails or hangs (it did for both Maria and Hugo), users can open Claude Code desktop and ask in chat: *"Please install the Briefs plugin from github.com/williamhscholl/daily-workflow-briefs"*. Claude figures out the install commands and runs them. This was the path that actually worked for both new-user cold tests.
+- **New "Install troubleshooting" section before FAQ.** Five common failure modes in order of frequency:
+  1. `command not found: claude` → PATH fix
+  2. `Unknown command: /briefs:setup` → restart Claude Code
+  3. `claude plugin marketplace add ...` fails → desktop chat fallback
+  4. Commands don't autocomplete → restart
+  5. Worked yesterday, broke today → run plugin update commands; if not, file an issue
+
+### Why
+The current install flow is implicitly reliant on:
+1. The user reading and acting on the Claude installer's PATH Setup note (which most people don't)
+2. The user understanding that Claude Code sessions are stateful and need restart for new plugins (no signal at all)
+3. The CLI plugin-install command working reliably (which it doesn't, in our cold-test sample)
+
+None of these are knowable from the prior README. Three out of three new users hit at least two of the three. v0.8.4 fixes the documentation so the next user has a chance.
+
+### What this DOES NOT touch
+- The underlying Claude Code installer behavior (Anthropic owns that — we just document around it)
+- The Slack-tagging UX from v0.7.5 (still works, separate flow)
+- The setup wizard prompts (separate from install; v0.7.6 already handled CLI-isms in the wizard)
+
+### Migration from v0.8.3
+None — README-only change. Already-installed users are unaffected; new installs get a smoother path.
+
+---
+
 ## [v0.8.3] — 2026-04-29
 
 ### Changed
