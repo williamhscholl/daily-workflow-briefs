@@ -10,6 +10,35 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.7.7] — 2026-04-28
+
+### Changed
+- **Work-offer reply prompt rewritten for chat tone.** The closing line of every offer message used to read like a CLI menu — `Reply with apply 1 / skip 2 / show 3 (to preview) / edit 1: <new text>`. Users couldn't tell whether those were the *only* allowed inputs or if natural language worked. New copy invites tone:
+
+  > *Reply in your own tone — `accept`, `edit`, `skip`, or `show more` on any of the numbered suggestions above. I'll follow through on the next poll automatically.*
+
+- **`accept` is the new primary verb; `apply` still works.** The wizard prompt teaches `accept` (more conversational); the poll's parser recognizes both. Same for `show more N` (preferred) and `show N` (still works).
+- **Tolerant matching.** The poll now strips conversational filler ("yeah", "sure", "go ahead", "nah") before matching commands, so `yeah accept 1 sure` resolves correctly. Ambiguous lines flag under "Flagged for your review" rather than guessing.
+
+### Why
+Three problems with the old copy:
+1. The slash-separated menu (`apply 1` / `skip 2` / …) read like a constrained CLI grammar, even though the parser was already permissive. Users second-guessed their phrasing.
+2. `apply` is a verb you do *to* something (apply a patch, apply for a job). `accept` is what you do *with* a suggestion. Better mental model.
+3. `show 3` was confusing — show what? `show more 3` makes the affordance ("expand this offer") obvious.
+
+### Files touched
+- `skills/brief-poll/SKILL.md` — regex patterns updated; offer template (summary + full); Step 1 description.
+- `skills/morning-brief/SKILL.md` — offer template (summary + full).
+- `README.md` — example phrasing in the differentiator + "How the pieces fit together" sections.
+
+### What this DOESN'T touch
+- The public `eod-brief` skill doesn't post offers (removed in v0.2.0), so no EOD-specific copy needed here. When v0.8.0 ships (re-enabling EOD offers + morning-brief carryover), the EOD offer message will say "I'll pick up your reply in tomorrow's morning brief" instead of "next poll" — different default because no poll runs overnight.
+
+### Migration from v0.7.6
+No action required. The poll continues to recognize `apply N` and `show N` for any users with muscle memory; new offer messages emit the new phrasing automatically.
+
+---
+
 ## [v0.7.6] — 2026-04-28
 
 ### Fixed

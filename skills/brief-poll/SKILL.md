@@ -7,7 +7,7 @@ description: Periodic brief poll. Reads replies to today's brief threads, execut
 
 You run on an interval (default 1 hour, configurable in `config.md`). Your job is four-fold:
 
-1. **Process approvals** — read thread replies to today's brief(s), find `apply N` / `skip N` / `edit N: ...` commands, execute approved offers, post confirmations in-thread.
+1. **Process approvals** — read thread replies to today's brief(s), find `accept N` / `skip N` / `edit N: ...` / `show more N` commands (also `apply N` for backward compat), execute approved offers, post confirmations in-thread.
 2. **Natural-language task updates** — parse free-form replies for task changes (add, done, reprioritize, reassign).
 3. **Scan new signals** — Zoom meetings ended, Jira "work due" digests, new Slack signals from team/VIPs — since the last poll run.
 4. **Emit new offers** — if new signals produce new delegable asks, post them as a new numbered list in the thread.
@@ -42,14 +42,17 @@ For each reply, parse it in this order — first match wins, but a single reply 
 
 ### 4a. Offer approval commands
 
-Regex patterns (case-insensitive, leading whitespace ok):
-- `^apply\s+(\d+)(?:\s+(.*))?$` — approve offer N (optional extra text = note to append to the action)
-- `^skip\s+(\d+)$` — dismiss offer N
-- `^show\s+(\d+)$` — reply in-thread with full preview of offer N (don't execute; just show)
-- `^edit\s+(\d+):\s*(.+)$` — replace offer N's `preview` text with the provided string, mark as `edited`, wait for explicit `apply N` before executing
-- `^apply\s+all$` — approve every currently-offered item in this thread (confirm first with a reply before executing)
+The user may reply in their own tone — match the verbs flexibly. Regex patterns (case-insensitive, leading whitespace ok):
 
-For `apply`, `edit`, `skip`, `show`: look up the offer by `brief_thread_ts` + `offer_number` in `.offers.jsonl`. Only match offers with status `offered` or `edited` (skip `applied` / `skipped` / `expired`).
+- `^(apply|accept)\s+(\d+)(?:\s+(.*))?$` — approve offer N. `accept` is the primary verb the wizard prompt teaches; `apply` is recognized as a synonym for backward compat. Optional extra text after the number = note to append to the action.
+- `^skip\s+(\d+)$` — dismiss offer N
+- `^show(?:\s+more)?\s+(\d+)$` — reply in-thread with full preview of offer N (don't execute; just show). Both `show 3` and `show more 3` work.
+- `^edit\s+(\d+):\s*(.+)$` — replace offer N's `preview` text with the provided string, mark as `edited`, wait for explicit `accept N` / `apply N` before executing.
+- `^(apply|accept)\s+all$` — approve every currently-offered item in this thread (confirm first with a reply before executing).
+
+Tolerate informal phrasing: "yeah accept 1", "accept 1 sure", "go ahead with 2", "skip 3 nah". Strip leading conversational filler, then match. If a line looks ambiguous, flag it under "Flagged for your review" in the confirmation rather than guessing.
+
+For `apply` / `accept`, `edit`, `skip`, `show`: look up the offer by `brief_thread_ts` + `offer_number` in `.offers.jsonl`. Only match offers with status `offered` or `edited` (skip `applied` / `skipped` / `expired`).
 
 ### 4b. Natural-language task commands (applied to `$tasks_file`)
 
@@ -152,8 +155,8 @@ If `summary`:
 1. [Short verb + target] — [one-line context]
 2. ...
 
-Reply with `apply 1` / `skip 2` / `show 3` (to preview the full text) / `edit 1: <new text>`.
-I'll pick up your reply on the next poll. ⚡ Need it sooner? Reply, then run `/briefs:run poll` in Claude Code.
+Reply in your own tone — `accept`, `edit`, `skip`, or `show more` on any of the numbered suggestions above. I'll follow through on the next poll automatically.
+⚡ Need it sooner? Reply, then run `/briefs:run poll` in Claude Code.
 ```
 
 If `full`:
@@ -166,8 +169,8 @@ If `full`:
 *2. [Short verb + target]*
 > [Full preview text / diff]
 
-Reply with `apply 1` / `skip 2` / `edit 1: <new text>`.
-I'll pick up your reply on the next poll. ⚡ Need it sooner? Reply, then run `/briefs:run poll` in Claude Code.
+Reply in your own tone — `accept`, `edit`, or `skip` any of the suggestions above. I'll follow through on the next poll automatically.
+⚡ Need it sooner? Reply, then run `/briefs:run poll` in Claude Code.
 ```
 
 Append corresponding entries to `.offers.jsonl` with this poll's `brief_thread_ts` + new `offer_number` sequence.

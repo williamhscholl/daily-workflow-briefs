@@ -268,8 +268,7 @@ If `summary`:
 2. [Short verb + target] — [one-line context]
 3. [Short verb + target] — [one-line context]
 
-Reply with `apply 1` / `skip 2` / `show 3` (to preview the full text) / `edit 1: <new text>`.
-I'll pick up your reply on the next poll and execute it there.
+Reply in your own tone — `accept`, `edit`, `skip`, or `show more` on any of the numbered suggestions above. I'll follow through on the next poll automatically.
 ⚡ Need it sooner? Reply here, then open Claude Code and run `/briefs:run poll` — it'll process your reply within seconds instead of waiting for the cron.
 ```
 
@@ -283,8 +282,7 @@ If `full`:
 *2. [Short verb + target]*
 > [Full preview text / diff]
 
-Reply with `apply 1` / `skip 2` / `edit 1: <new text>`.
-I'll pick up your reply on the next poll and execute it there.
+Reply in your own tone — `accept`, `edit`, or `skip` any of the suggestions above. I'll follow through on the next poll automatically.
 ⚡ Need it sooner? Reply here, then open Claude Code and run `/briefs:run poll`.
 ```
 

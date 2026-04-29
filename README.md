@@ -23,7 +23,7 @@ You pick the times during setup. Defaults: 7:30am / 3:30pm weekdays, checker eve
 
 ### Briefs offers to do work for you
 
-Briefs doesn't just tell you what's on your plate — it offers to handle it. Each morning brief and periodic check ends with concrete actions Claude can take: edit a Confluence page, comment on a Jira ticket, draft a Slack reply, mark a task done. Approve from your phone with `apply 1` / `skip 2` / `edit 1: …`. Nothing happens without your explicit approval.
+Briefs doesn't just tell you what's on your plate — it offers to handle it. Each morning brief and periodic check ends with concrete actions Claude can take: edit a Confluence page, comment on a Jira ticket, draft a Slack reply, mark a task done. Approve from your phone in your own tone — `accept 1`, `skip 2`, `edit 3: <new text>`, `show more 1`. Nothing happens without your explicit approval.
 
 ### Work is organized into todo and monitoring
 
@@ -89,7 +89,7 @@ The four skills share `config.md` (your settings) and `tasks.md` (your work) as 
 
 **Briefs** push state out to you — morning agenda, end-of-day recap, tomorrow's top 3 — on a fixed schedule. They never edit `tasks.md`; they only present it.
 
-**Sync** is the inverse direction. The poll reads your thread replies and converts them into edits on `tasks.md`. It picks up both **explicit approvals** (`apply 1`, `skip 2`, `edit 1: …`) and **natural-language updates** (`mark X done`, `add a task to <goal>`, `move Y to Friday`). Posts a `✅ Tasks updated` confirmation in-thread.
+**Sync** is the inverse direction. The poll reads your thread replies and converts them into edits on `tasks.md`. It picks up both **explicit approvals** (`accept 1`, `skip 2`, `edit 1: …`, `show more 3`) and **natural-language updates** (`mark X done`, `add a task to <goal>`, `move Y to Friday`). Posts a `✅ Tasks updated` confirmation in-thread.
 
 **On-demand** is `tasks` — fires when you ask in Claude Code chat. Reads `tasks.md` directly, no Slack involvement.
 
