@@ -10,6 +10,42 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) conve
 
 ---
 
+## [v0.8.1] — 2026-04-28
+
+### Changed
+- **README marquee rewritten for the exec-demo audience.** The old opening described what the plugin *is* ("a self-maintaining task list, delivered through Slack") and then enumerated value props. The new opening leads with a hook line that triggers recognition before introducing the category — same arc product managers use to pitch their own work.
+
+  **Old:**
+  > # Daily Workflow Briefs
+  > **A self-maintaining task list, delivered through Slack.**
+  >
+  > ## What it does
+  > 1. Organizes and prioritizes your work.
+  > 2. Updates your work automatically.
+  >
+  > No todo app to learn. No manually updating anything. No forgetting...
+
+  **New:**
+  > # Daily Workflow Briefs
+  > ### Your work changes all day. Your task list should too.
+  > *An automatic task manager that lives in Slack.*
+  >
+  > ## Automatically organizes, prioritizes, and updates your tasks
+  >
+  > Your work changes all day — Slack threads, meeting decisions, email asks, calendar shifts. Your task list should reflect those changes without you typing them in.
+  >
+  > Briefs reads your signals throughout the day and updates your tasks automatically: what you owe, what you're monitoring, what you need to brush up on. All in Slack. No new app.
+
+- **GitHub repo description** updated to: *"A task manager that updates itself. In Slack."* — the one-liner version of the new framing, used wherever GitHub displays the repo metadata (org-page card, search results, social previews).
+
+### Why
+The previous opening tested poorly during a live exec demo — too descriptive, no immediate hook. The new framing follows hook → category → mechanism, which is what executives respond to because it mirrors how they explain their own products.
+
+### Migration from v0.8.0
+README-only change. No skill or behavior changes.
+
+---
+
 ## [v0.8.0] — 2026-04-28
 
 **Theme: EOD offers are back, with a real handoff to next morning's brief.**

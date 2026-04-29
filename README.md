@@ -1,13 +1,14 @@
 # Daily Workflow Briefs
 
-**A self-maintaining task list, delivered through Slack.**
+### Your work changes all day. Your task list should too.
 
-## What it does
+*An automatic task manager that lives in Slack.*
 
-1. **Organizes and prioritizes your work.** Pulls signals from Slack, email, calendar, meeting notes, and Jira to create goals and tasks — with owners, priority, due dates, and notes.
-2. **Updates your work automatically.** Checks throughout the day for new signals (Slack decisions, meeting action items, email deadlines) and updates tasks accordingly.
+## Automatically organizes, prioritizes, and updates your tasks
 
-No todo app to learn. No manually updating anything. No forgetting a new due date or a decision made in a meeting.
+Your work changes all day — Slack threads, meeting decisions, email asks, calendar shifts. Your task list should reflect those changes without you typing them in.
+
+Briefs reads your signals throughout the day and updates your tasks automatically: what you owe, what you're monitoring, what you need to brush up on. All in Slack. No new app.
 
 Three skills run on a schedule:
 
